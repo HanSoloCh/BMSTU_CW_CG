@@ -12,6 +12,7 @@ void Line::draw(QPainter &painter, const ProjectionStrategy &strategy, QSize can
     QPointF startPoint = strategy.project(line.first, canvasSize);
     QPointF endPoint = strategy.project(line.second, canvasSize);
     painter.drawLine(startPoint, endPoint);
+
 }
 
 void Line::rotate(double angleX, double angleY, double angleZ)

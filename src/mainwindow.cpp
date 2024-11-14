@@ -79,34 +79,5 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 
 void MainWindow::on_drawButton_clicked()
 {
-    int steps = 60;
-    Line *line = &(canvasFacade->line);
-    std::vector<std::vector<QPointF>> surfacePoints;
-    float angleStep = 360.0f / steps;
-
-    // Генерация точек поверхности вращения
-    for (int i = 0; i <= steps; ++i) {
-        float angle = i * angleStep;
-        QVector3D rotatedStart = rotatePoint(line->start(), angle, axis);
-        QVector3D rotatedEnd = rotatePoint(line->end(), angle, axis);
-
-        surfacePoints.push_back({ projectTo2D(rotatedStart), projectTo2D(rotatedEnd) });
-    }
-
-    // Теперь соединяем эти точки в треугольники для создания полигональной сетки
-    for (int i = 0; i < surfacePoints.size() - 1; ++i) {
-        for (int j = 0; j < surfacePoints[i].size() - 1; ++j) {
-            QPointF p1 = surfacePoints[i][j];
-            QPointF p2 = surfacePoints[i + 1][j];
-            QPointF p3 = surfacePoints[i + 1][j + 1];
-            QPointF p4 = surfacePoints[i][j + 1];
-
-            // Создайте два треугольника
-            addTriangle(p1, p2, p3);
-            addTriangle(p1, p3, p4);
-        }
-    }
-}
-
 }
 

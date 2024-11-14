@@ -12,7 +12,6 @@ public:
     void draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) override;
     void rotate(double angleX, double angleY, double angleZ) override;
 private:
-
     QPair<Point, Point> line;
     QColor color;
 };

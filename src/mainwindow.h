@@ -27,6 +27,8 @@ protected:
 private slots:
     void on_setForming_clicked();
 
+    void on_drawButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     std::unique_ptr<CanvasFacade> canvasFacade;
