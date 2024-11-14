@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <memory>
+
+#include "facade.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,7 +20,15 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+protected:
+    void setValidatorsToIntputEdits();
+    void keyPressEvent(QKeyEvent *event) override;
+
+private slots:
+    void on_setForming_clicked();
+
 private:
     Ui::MainWindow *ui;
+    std::unique_ptr<CanvasFacade> canvasFacade;
 };
 #endif // MAINWINDOW_H

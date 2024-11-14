@@ -4,14 +4,16 @@
 #include <QObject>
 #include <QPainter>
 
-class AbstractObject : public QObject
+#include "strategy.h"
+
+class AbstractObject
 {
-    Q_OBJECT
 public:
-    explicit AbstractObject(QObject *parent = nullptr);
+    explicit AbstractObject() = default;
     virtual ~AbstractObject() = 0;
 
-    virtual void draw(QPainter &painter) = 0;
+    virtual void draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) = 0;
+    virtual void rotate(double angleX, double angleY, double angleZ) = 0;
 };
 
 #endif // ABSTRACTOBJECT_H

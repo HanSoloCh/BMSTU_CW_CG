@@ -3,17 +3,18 @@
 
 #include "abstractobject.h"
 
-#include <QPointF>
+#include "point.h"
 
 class Line : public AbstractObject
 {
 public:
-    explicit Line(QPair<QPointF, QPointF> line, QColor color, QObject *parent = nullptr);
-    void draw(QPainter &painter) override;
-
+    explicit Line(QPair<Point, Point> curLine, QColor curColor = Qt::white);
+    void draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) override;
+    void rotate(double angleX, double angleY, double angleZ) override;
 private:
-    QPair<QPointF, QPointF> _line;
-    QColor _color;
+
+    QPair<Point, Point> line;
+    QColor color;
 };
 
 #endif // LINE_H

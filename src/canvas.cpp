@@ -1,6 +1,10 @@
 #include "canvas.h"
 
 #include <QPainter>
+#include <QMouseEvent>
+
+
+#include "strategy.h"
 #include "line.h"
 
 Canvas::Canvas(QWidget *parent)
@@ -8,41 +12,45 @@ Canvas::Canvas(QWidget *parent)
 {
 }
 
-QPointF Canvas::projectTo2D(float x, float y, float z) {
-    float distance = 200.0f;
-    float factor = distance / (distance + z);
-    float projectedX = x * factor + width() / 2.0f;
-    float projectedY = -y * factor + height() / 2.0f;
-    return QPointF(projectedX, projectedY);
+void Canvas::addObject(AbstractObject *newObject)
+{
+    objectsArray.push_back(std::shared_ptr<AbstractObject>(newObject));
 }
 
-void Canvas::printAxes()
+void Canvas::rotate(double xAngle, double yAngle, double zAngle)
 {
-    QPointF origin = projectTo2D(0, 0, 0);
+    for (const auto &curObject : objectsArray) {
+        curObject->rotate(xAngle, yAngle, zAngle);
+    }
+}
 
-    // Конечные точки для осей X, Y, Z
-    QPointF xAxisEnd = projectTo2D(100, 0, 0);
-    QPointF yAxisEnd = projectTo2D(0, 100, 0);
-    QPointF zAxisEnd = projectTo2D(0, 0, 100);
+void Canvas::addAxes()
+{
+    Point origin{0, 0, 0};
 
-    // QPointF origin = projectTo2D(0, 0, 0);
+    Point xAxisEnd{100, 0, 0};
+    Point yAxisEnd{0, 100, 0};
+    Point zAxisEnd{0, 0, 100};
 
-    Line *axisX = new Line(qMakePair(origin, xAxisEnd), Qt::red, this);
-    Line *axisY = new Line(qMakePair(origin, yAxisEnd), Qt::green, this);
-    Line *axisZ = new Line(qMakePair(origin, zAxisEnd), Qt::blue, this);
+    Line *axisX = new Line(qMakePair(origin, xAxisEnd), Qt::red);
+    Line *axisY = new Line(qMakePair(origin, yAxisEnd), Qt::green);
+    Line *axisZ = new Line(qMakePair(origin, zAxisEnd), Qt::blue);
 
-    objectsArray.push_back(axisX);
-    objectsArray.push_back(axisY);
-    objectsArray.push_back(axisZ);
+    addObject(axisX);
+    addObject(axisY);
+    addObject(axisZ);
 }
 
 void Canvas::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
-    printAxes();
-
+    if (objectsArray.empty())
+        addAxes();
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
+
+    DefaultProjectionStrategy strategy;
     for (const auto &curObject : objectsArray) {
-        curObject->draw(painter);
+        curObject->draw(painter, strategy, size());
     }
 }
+

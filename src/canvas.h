@@ -2,6 +2,7 @@
 #define CANVAS_H
 
 #include <QWidget>
+#include <memory>
 
 #include "abstractobject.h"
 
@@ -10,14 +11,14 @@ class Canvas : public QWidget
     Q_OBJECT
 public:
     explicit Canvas(QWidget *parent = nullptr);
-
+    void addObject(AbstractObject *newObject);
+    void rotate(double xAngle, double yAngle, double zAngle);
 protected:
+    void addAxes();
     void paintEvent(QPaintEvent *event) override;
-    QPointF projectTo2D(float x, float y, float z);
-    void printAxes();
 
 private:
-    QVector<AbstractObject *> objectsArray;
+    QVector<std::shared_ptr<AbstractObject>> objectsArray;
 };
 
 #endif // CANVAS_H

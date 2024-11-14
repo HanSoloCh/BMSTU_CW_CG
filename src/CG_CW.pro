@@ -11,15 +11,23 @@ CONFIG += c++17
 SOURCES += \
     abstractobject.cpp \
     canvas.cpp \
+    facade.cpp \
     line.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    point.cpp \
+    strategy.cpp \
+    triangle.cpp
 
 HEADERS += \
     abstractobject.h \
     canvas.h \
+    facade.h \
     line.h \
-    mainwindow.h
+    mainwindow.h \
+    point.h \
+    strategy.h \
+    triangle.h
 
 FORMS += \
     mainwindow.ui
