@@ -1,18 +1,16 @@
-#ifndef LINE_H
-#define LINE_H
+#ifndef ROTATIONSHAPE_H
+#define ROTATIONSHAPE_H
 
 #include "abstractobject.h"
 
-#include "point.h"
+#include "line.h"
+#include "triangle.h"
 
-class Line : public AbstractObject
+class RotationShape : public AbstractObject
 {
 public:
-    explicit Line(QPair<Point, Point> curLine, QColor curColor = Qt::white, bool isConst = false);
-    ~Line() = default;
-
-    Point start() const;
-    Point end() const;
+    RotationShape(const Line &forming, QColor color = Qt::white, bool isConst = false);
+    ~RotationShape() = default;
 
     void draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) const override;
 
@@ -21,7 +19,9 @@ public:
     void scale(double xScale, double yScale, double zScale) override;
 
 private:
-    QPair<Point, Point> line;
+    // QVector<Triangle> poligonArray;
+
+    std::vector<std::vector<Point>> surface;
 };
 
-#endif // LINE_H
+#endif // ROTATIONSHAPE_H

@@ -1,13 +1,24 @@
 #include "point.h"
 
-Point::Point(double curX, double curY, double curZ, QColor curColor): x(curX), y(curY), z(curZ), color(curColor)
+Point::Point(double curX, double curY, double curZ, QColor curColor, bool isConst)
+    : AbstractObject(curColor, isConst)
+    , x(curX)
+    , y(curY)
+    , z(curZ)
 {}
 
-void Point::draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize)
+void Point::draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) const
 {
     painter.setPen(QPen(color, 2));
     QPointF point = strategy.project(*this, canvasSize);
     painter.drawPoint(point);
+}
+
+void Point::move(double xMove, double yMove, double zMove)
+{
+    x += xMove;
+    y += yMove;
+    z += zMove;
 }
 
 void Point::rotate(double angleX, double angleY, double angleZ)
@@ -15,6 +26,13 @@ void Point::rotate(double angleX, double angleY, double angleZ)
     xRotate(*this, angleX);
     yRotate(*this, angleY);
     zRotate(*this, angleZ);
+}
+
+void Point::scale(double xScale, double yScale, double zScale)
+{
+    x *= xScale;
+    y *= yScale;
+    z *= zScale;
 }
 
 void Point::xRotate(Point &point, double angle)

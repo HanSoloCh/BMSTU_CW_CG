@@ -8,11 +8,14 @@
 class Point : public AbstractObject
 {
 public:
-    Point(double curX, double curY, double curZ, QColor curColor = Qt::white);
+    Point(double curX, double curY, double curZ, QColor curColor = Qt::white, bool isConst = false);
     ~Point() = default;
 
-    void draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) override;
-    void rotate(double angleX, double angleY, double angleZ) override;
+    void draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) const override;
+
+    void move(double xMove, double yMove, double zMove) override;
+    void rotate(double xAngle, double yAngle, double zAngle) override;
+    void scale(double xScale, double yScale, double zScale) override;
 
     double getX() const {
         return x;
@@ -29,10 +32,7 @@ protected:
     void yRotate(Point &point, double angle);
     void zRotate(Point &point, double angle);
 private:
-    double x;
-    double y;
-    double z;
-    QColor color;
+    double x, y, z;
 };
 
 #endif // POINT_H

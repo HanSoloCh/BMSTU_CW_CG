@@ -16,6 +16,7 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     point.cpp \
+    rotationshape.cpp \
     strategy.cpp \
     triangle.cpp
 
@@ -26,6 +27,7 @@ HEADERS += \
     line.h \
     mainwindow.h \
     point.h \
+    rotationshape.h \
     strategy.h \
     triangle.h
 

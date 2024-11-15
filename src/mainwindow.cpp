@@ -46,20 +46,39 @@ void MainWindow::on_setForming_clicked()
                           ui->y2InputEdit->text().toDouble(),
                           ui->z2InputEdit->text().toDouble(),
                           Qt::white);
-    Point start{ui->x1InputEdit->text().toDouble(), ui->y1InputEdit->text().toDouble(), ui->z1InputEdit->text().toDouble()};
-    Point end{ui->x2InputEdit->text().toDouble(), ui->y2InputEdit->text().toDouble(), ui->z2InputEdit->text().toDouble()};
-    canvasFacade->line = Line(qMakePair(start, end), Qt::black);
-
-    canvasFacade->update();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if (event->modifiers() & Qt::ControlModifier)
+        keyPressEventWithCtrl(event);
+    else
+        keyPressEventWithoutCtrl(event);
+}
+
+void MainWindow::keyPressEventWithoutCtrl(QKeyEvent *event) {
     switch (event->key()) {
     case Qt::Key_D:
-        canvasFacade->rotate(0, 0, 1);
+        canvasFacade->move(5, 0, 0);
         break;
     case Qt::Key_A:
-        canvasFacade->rotate(0, 0, -1);
+        canvasFacade->move(-5, 0, 0);
+        break;
+    case Qt::Key_W:
+        canvasFacade->move(0, 5, 0);
+        break;
+    case Qt::Key_S:
+        canvasFacade->move(0, -5, 0);
+        break;
+    }
+}
+
+void MainWindow::keyPressEventWithCtrl(QKeyEvent *event) {
+    switch (event->key()) {
+    case Qt::Key_D:
+        canvasFacade->rotate(0, 1, 0);
+        break;
+    case Qt::Key_A:
+        canvasFacade->rotate(0, -1, 0);
         break;
     case Qt::Key_S:
         canvasFacade->rotate(1, 0, 0);
@@ -68,16 +87,29 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
         canvasFacade->rotate(-1, 0, 0);
         break;
     case Qt::Key_E:
-        canvasFacade->rotate(0, 1, 0);
+        canvasFacade->rotate(0, 0, -1);
         break;
     case Qt::Key_Q:
-        canvasFacade->rotate(0, -1, 0);
+        canvasFacade->rotate(0, 0, 1);
+        break;
+    case Qt::Key_Equal:
+        canvasFacade->scale(1.25, 1.25, 1.25);
+        break;
+    case Qt::Key_Minus:
+        canvasFacade->scale(0.8, 0.8, 0.8);
         break;
     }
-}
 
+}
 
 void MainWindow::on_drawButton_clicked()
 {
+    canvasFacade->makeRotatinShape();
+}
+
+
+void MainWindow::on_clearButton_clicked()
+{
+    canvasFacade->deleteAll();
 }
 

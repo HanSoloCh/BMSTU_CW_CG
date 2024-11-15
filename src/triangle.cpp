@@ -4,10 +4,9 @@ Triangle::Triangle(const Point &curP1, const Point &curP2, const Point &curP3, c
     : p1(curP1)
     , p2(curP2)
     , p3(curP3)
-    , color(curColor)
 {}
 
-void Triangle::draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize)
+void Triangle::draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) const
 {
     painter.setPen(QPen(color, 2));
     QPointF projectP1 = strategy.project(p1, canvasSize);

@@ -23,11 +23,15 @@ public:
 protected:
     void setValidatorsToIntputEdits();
     void keyPressEvent(QKeyEvent *event) override;
+    void keyPressEventWithoutCtrl(QKeyEvent *event);
+    void keyPressEventWithCtrl(QKeyEvent *event);
 
 private slots:
     void on_setForming_clicked();
 
     void on_drawButton_clicked();
+
+    void on_clearButton_clicked();
 
 private:
     Ui::MainWindow *ui;

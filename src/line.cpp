@@ -1,23 +1,45 @@
 #include "line.h"
 
 
-Line::Line(QPair<Point, Point> curLine, QColor curColor):
-    line(curLine),
-    color(curColor)
+Line::Line(QPair<Point, Point> curLine, QColor curColor, bool isConst):
+    AbstractObject(curColor, isConst),
+    line(curLine)
 {}
 
-void Line::draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize)
+Point Line::start() const
+{
+    return line.first;
+}
+
+Point Line::end() const
+{
+    return line.second;
+}
+
+void Line::draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) const
 {
     painter.setPen(QPen(color, 2));
-    QPointF startPoint = strategy.project(line.first, canvasSize);
-    QPointF endPoint = strategy.project(line.second, canvasSize);
+    QPointF startPoint = strategy.project(start(), canvasSize);
+    QPointF endPoint = strategy.project(end(), canvasSize);
     painter.drawLine(startPoint, endPoint);
 
 }
 
-void Line::rotate(double angleX, double angleY, double angleZ)
+void Line::move(double xMove, double yMove, double zMove)
 {
-    line.first.rotate(angleX, angleY, angleZ);
-    line.second.rotate(angleX, angleY, angleZ);
+    start().move(xMove, yMove, zMove);
+    end().move(xMove, yMove, zMove);
+}
+
+void Line::rotate(double xAngle, double yAngle, double zAngle)
+{
+    start().rotate(xAngle, yAngle, zAngle);
+    end().rotate(xAngle, yAngle, zAngle);
+}
+
+void Line::scale(double xScale, double yScale, double zScale)
+{
+    start().scale(xScale, yScale, zScale);
+    end().scale(xScale, yScale, zScale);
 }
 
