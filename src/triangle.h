@@ -1,26 +1,28 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
-#include "abstractobject.h"
+#include <QColor>
 
 #include "point.h"
+#include "abstractmodel.h"
+#include "strategy.h"
 
-class Triangle : public AbstractObject
-{
+
+class Triangle: public AbstractModel {
 public:
-    Triangle(const Point &curP1, const Point &curP2, const Point &curP3, const QColor &curColor);
+    Triangle(const Point &p1, const Point &p2, const Point &p3, const QColor &color = Qt::white);
+    explicit Triangle(const QVector<Point> &points, const QColor &color = Qt::white);
+
     ~Triangle() = default;
 
-    void draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) const override;
+    QVector<Point> GetPoints() const {
+        return points_;
+    }
 
-    // void move(double xMove, double yMove, double zMove) override;
-    void rotate(double xAngle, double yAngle, double zAngle) override;
-    // void scale(double xScale, double yScale, double zScale) override;
+    void Accept(BaseDrawVisitor &visitor) const override;
 
 private:
-    Point p1;
-    Point p2;
-    Point p3;
+    QVector<Point> points_;
 };
 
 #endif // TRIANGLE_H

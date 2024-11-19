@@ -1,26 +1,27 @@
 #include "triangle.h"
 
-Triangle::Triangle(const Point &curP1, const Point &curP2, const Point &curP3, const QColor &curColor)
-    : p1(curP1)
-    , p2(curP2)
-    , p3(curP3)
-{}
+#include "drawvisitor.h"
 
-void Triangle::draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) const
-{
-    painter.setPen(QPen(color, 2));
-    QPointF projectP1 = strategy.project(p1, canvasSize);
-    QPointF projectP2 = strategy.project(p2, canvasSize);
-    QPointF projectP3 = strategy.project(p3, canvasSize);
+QColor IntensityColor(const QColor &color, double intensity) {
+    if (intensity < 0) intensity = 0;
+    if (intensity > 255) intensity = 255;
 
-    painter.drawLine(projectP1, projectP2);
-    painter.drawLine(projectP2, projectP3);
-    painter.drawLine(projectP1, projectP3);
+    QColor newColor(
+        (color.red() * intensity) / 255,
+        (color.green() * intensity) / 255,
+        (color.blue() * intensity) / 255
+        );
+    return newColor;
 }
 
-void Triangle::rotate(double angleX, double angleY, double angleZ)
-{
-    p1.rotate(angleX, angleY, angleZ);
-    p2.rotate(angleX, angleY, angleZ);
-    p3.rotate(angleX, angleY, angleZ);
+Triangle::Triangle(const Point &p1, const Point &p2, const Point &p3, const QColor &color)
+    : AbstractModel(color)
+    , points_({p1, p2, p3}) {}
+
+Triangle::Triangle(const QVector<Point> &points, const QColor &color)
+    : AbstractModel(color)
+    , points_(points) {}
+
+void Triangle::Accept(BaseDrawVisitor &visitor) const {
+    visitor.Visit(*this);
 }

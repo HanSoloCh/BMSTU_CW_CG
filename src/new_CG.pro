@@ -9,25 +9,23 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    abstractobject.cpp \
+    abstractmodel.cpp \
     canvas.cpp \
-    facade.cpp \
-    line.cpp \
+    carcasmodel.cpp \
+    drawvisitor.cpp \
     main.cpp \
     mainwindow.cpp \
     point.cpp \
-    rotationshape.cpp \
     strategy.cpp \
     triangle.cpp
 
 HEADERS += \
-    abstractobject.h \
+    abstractmodel.h \
     canvas.h \
-    facade.h \
-    line.h \
+    carcasmodel.h \
+    drawvisitor.h \
     mainwindow.h \
     point.h \
-    rotationshape.h \
     strategy.h \
     triangle.h
 

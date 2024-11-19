@@ -2,10 +2,13 @@
 
 #include <QApplication>
 
+#include "canvas.h"
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    Canvas canvas;
+    canvas.resize(800, 800);
+    canvas.show();
     return a.exec();
 }

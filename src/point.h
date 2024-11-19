@@ -1,38 +1,29 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include "abstractobject.h"
-
 #include <QColor>
+#include <QVector3D>
+#include <QPointF>
 
-class Point : public AbstractObject
-{
+#include "abstractmodel.h"
+
+class Point: public AbstractModel, public QVector3D {
 public:
-    Point(double curX, double curY, double curZ, QColor curColor = Qt::white, bool isConst = false);
+    Point(double x, double y, double z, const QColor &color = Qt::white, double h = 1.0);
     ~Point() = default;
 
-    void draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) const override;
-
-    void move(double xMove, double yMove, double zMove) override;
-    void rotate(double xAngle, double yAngle, double zAngle) override;
-    void scale(double xScale, double yScale, double zScale) override;
-
-    double getX() const {
-        return x;
-    }
-    double getY() const {
-        return y;
-    }
-    double getZ() const {
-        return z;
+    double h() const {
+        return h_;
     }
 
-protected:
-    void xRotate(Point &point, double angle);
-    void yRotate(Point &point, double angle);
-    void zRotate(Point &point, double angle);
+    operator QPointF() {
+        return QPointF(x(), y());
+    }
+
+    void Accept(BaseDrawVisitor &visitor) const override;
+
 private:
-    double x, y, z;
+    double h_;
 };
 
 #endif // POINT_H

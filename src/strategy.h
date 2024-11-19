@@ -6,20 +6,31 @@
 
 class Point;
 
-class ProjectionStrategy
-{
+class AbstractStrategyProjection {
 public:
-    ProjectionStrategy() = default;
-    virtual ~ProjectionStrategy() = default;
-    virtual QPointF project(const Point &point, const QSize &canvasSize) const = 0;
+    AbstractStrategyProjection() = default;
+    virtual ~AbstractStrategyProjection() = 0;
+
+    virtual Point ProjectPoint(const Point &point, const QSize &canvas_size) const = 0;
 };
 
-class DefaultProjectionStrategy : public ProjectionStrategy
+class PerspectivStrategyProjection: public AbstractStrategyProjection
 {
 public:
-    DefaultProjectionStrategy() = default;
-    ~DefaultProjectionStrategy() = default;
-    QPointF project(const Point &point, const QSize &canvasSize) const override;
+    explicit PerspectivStrategyProjection(int viewport_width = 1,
+                                           int viewport_height = 1,
+                                           int distance = 1);
+
+    Point ProjectPoint(const Point &point, const QSize &canvas_size) const override;
+
+protected:
+    QPointF ViewportToCanvas(double x, double y, const QSize &canvas_size) const;
+
+private:
+    const int kViewportWidth;
+    const int kViewportHeight;
+    const int kDistance;
 };
+
 
 #endif // STRATEGY_H

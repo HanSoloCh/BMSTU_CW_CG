@@ -2,11 +2,23 @@
 
 #include "point.h"
 
-QPointF DefaultProjectionStrategy::project(const Point &point, const QSize &canvasSize) const
-{
-    // float distance = 200.0f;
-    // float factor = distance / (distance + z);
-    // float projectedX = x * factor + canvasSize.width() / 2.0f;
-    // float projectedY = -y * factor + canvasSize.height() / 2.0f;
-    return QPointF(point.getX() + canvasSize.width() / 2.0, -point.getY() + canvasSize.height() / 2.0);
+AbstractStrategyProjection::~AbstractStrategyProjection() {}
+
+PerspectivStrategyProjection::PerspectivStrategyProjection(int viewport_width, int viewport_height, int distance)
+    : kViewportWidth(viewport_width)
+    , kViewportHeight(viewport_height)
+    , kDistance(distance) {}
+
+Point PerspectivStrategyProjection::ProjectPoint(const Point &point, const QSize &canvas_size) const {
+    double x = point.x();
+    double y = point.y();
+    double z = point.z();
+    QPointF project_point = ViewportToCanvas(x * kDistance / z, y * kDistance / z, canvas_size);
+    return Point(project_point.x(), project_point.y(), z, point.GetColor());
+}
+
+
+QPointF PerspectivStrategyProjection::ViewportToCanvas(double x, double y, const QSize &canvas_size) const {
+    return QPointF(x * canvas_size.width() / kViewportWidth + canvas_size.width() / 2,
+                   -y * canvas_size.height() / kViewportHeight + canvas_size.height() / 2);
 }
