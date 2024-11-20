@@ -31,13 +31,13 @@ public:
 
     void Visit(const Point &point) override;
     void Visit(const Triangle &triangle) override;
-    void Visit(const CarcasModel &carcas_mode) override;
+    void Visit(const CarcasModel &carcas_model) override;
 
+    static QVector<double> Interpolate(double x0, double y0, double x1, double y1);
 protected:
     void DrawPoint(const Point &point);
     void DrawTriangle(const Point &p0, const Point &p1, const Point &p2);
 
-    QVector<double> Interpolate(double x0, double y0, double x1, double y1);
 
 private:
     QSize canvas_size_;

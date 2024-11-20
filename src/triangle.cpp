@@ -2,17 +2,6 @@
 
 #include "drawvisitor.h"
 
-QColor IntensityColor(const QColor &color, double intensity) {
-    if (intensity < 0) intensity = 0;
-    if (intensity > 255) intensity = 255;
-
-    QColor newColor(
-        (color.red() * intensity) / 255,
-        (color.green() * intensity) / 255,
-        (color.blue() * intensity) / 255
-        );
-    return newColor;
-}
 
 Triangle::Triangle(const Point &p1, const Point &p2, const Point &p3, const QColor &color)
     : AbstractModel(color)

@@ -5,6 +5,7 @@
 
 #include "point.h"
 #include "triangle.h"
+#include "carcasmodel.h"
 
 #include "strategy.h"
 #include "drawvisitor.h"
@@ -48,18 +49,23 @@ void Canvas::paintEvent(QPaintEvent *event)
     std::shared_ptr<Triangle> t12 = std::make_shared<Triangle>(QVector<Point>{C, H, D}, Qt::blue);
 
 
-    AddModel(t1);
-    AddModel(t12);
-    AddModel(t2);
-    AddModel(t4);
-    AddModel(t6);
-    AddModel(t5);
-    AddModel(t11);
-    AddModel(t7);
-    AddModel(t10);
-    AddModel(t8);
-    AddModel(t9);
-    AddModel(t3);
+    // AddModel(t1);
+    // AddModel(t12);
+    // AddModel(t2);
+    // AddModel(t4);
+    // AddModel(t6);
+    // AddModel(t5);
+    // AddModel(t11);
+    // AddModel(t7);
+    // AddModel(t10);
+    // AddModel(t8);
+    // AddModel(t9);
+    // AddModel(t3);
+
+    // AddModel(std::make_shared<Triangle>(A, B, C, Qt::green));
+
+    AddModel(std::make_shared<CarcasModel>(GenerateShape(1, 20, 20, Qt::green, Point(0, 0, 6))));
+
 
     PerspectivStrategyProjection *strategy = new PerspectivStrategyProjection();
     DrawVisitor visitor(&painter, size(), strategy);
@@ -70,8 +76,3 @@ void Canvas::paintEvent(QPaintEvent *event)
     }
     delete strategy;
 }
-
-
-
-
-

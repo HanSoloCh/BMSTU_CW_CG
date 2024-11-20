@@ -18,36 +18,54 @@ void DrawVisitor::Visit(const Point &point) {
     DrawPoint(project_point);
 }
 
-void sortPoints(Point &p0, Point &p1, Point &p2) {
-    if (p1.y() < p0.y())
-        std::swap(p1, p0);
-    if (p2.y() < p0.y())
-        std::swap(p2, p0);
-    if (p2.y() < p1.y())
-        std::swap(p2, p1);
+
+QColor IntensityColor(const QColor &color, double intensity) {
+    if (intensity < 0) intensity = 0;
+    if (intensity > 255) intensity = 255;
+
+    QColor newColor(
+        (color.red() * intensity) / 255,
+        (color.green() * intensity) / 255,
+        (color.blue() * intensity) / 255
+        );
+    return newColor;
+}
+
+
+int calcInd(const Point &p0, const Point &p1, const Point &p2) {
+    QVector3D light(0, 0, -1);
+    QVector3D n = QVector3D::normal(p2 - p0, p1 - p0);
+    double ind = QVector3D::dotProduct(n, light);
+    return ind * 255;
 }
 
 void DrawVisitor::Visit(const Triangle &triangle) {
     QVector<Point> points = triangle.GetPoints();
-    // Сортировка по y
-    // std::sort(points.begin(), points.end(), [](const Point &p1, const Point &p2) {
-    //     return p1.y() > p2.y();
-    // });
 
+    int ind = calcInd(points[0], points[1], points[2]);
+    if (std::isnan(ind) || ind < 0) {
+        return;
+    }
 
     for (auto &point : points) {
         point = projection_->ProjectPoint(point, canvas_size_);
     }
 
-    sortPoints(points[0], points[1], points[2]);
+    // // Сортировка по y
+    std::sort(points.begin(), points.end(), [](const Point &p1, const Point &p2) {
+        return p1.y() < p2.y();
+    });
+
     QColor color = painter_->pen().color();
-    painter_->setPen(triangle.GetColor());
+    painter_->setPen(IntensityColor(triangle.GetColor(), ind));
     DrawTriangle(points[0], points[1], points[2]);
     painter_->setPen(color);
 }
 
-void DrawVisitor::Visit(const CarcasModel &carcas_mode) {
-
+void DrawVisitor::Visit(const CarcasModel &carcas_model) {
+    for (const auto &triangles : carcas_model.GetTriangles()) {
+        triangles.Accept(*this);
+    }
 }
 
 void DrawVisitor::DrawPoint(const Point &point) {
