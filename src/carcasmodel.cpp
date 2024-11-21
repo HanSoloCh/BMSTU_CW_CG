@@ -1,28 +1,38 @@
 #include "carcasmodel.h"
 
 #include "drawvisitor.h"
-#include "qdebug.h"
+
+#include <qdebug.h>
+
+// Qt почему-то считает, что я нигде не использую эту функцию
+[[maybe_unused]] static uint qHash(const Point &point, uint seed) {
+    return qHash(point.x(), seed) ^
+           qHash(point.y(), seed) ^
+           qHash(point.z(), seed);
+}
 
 CarcasModel::CarcasModel(const QVector<Triangle> &triangles, const QColor &color)
     : AbstractModel(color)
-    , triangles_(triangles) {}
-
-CarcasModel::CarcasModel(const QVector<Point> &points,
-                         const QVector<QVector<int>> &links,
-                         const QColor &color)
-    : AbstractModel(color) {
-    for (int i = 0; i < links.size(); ++i) {
-        QVector<int> link = links[i];
-        triangles_.push_back(Triangle(points[link[0]],
-                                      points[link[1]],
-                                      points[link[2]]));
+    , triangles_(triangles) {
+    QHash<Point, QVector<QVector3D>> points_normals;
+    for (int i = 0; i < triangles.size(); ++i) {
+        Triangle triangle = triangles[i];
+        QVector3D normal = triangle.CalculateNormal();
+        for (const auto &point : triangle.GetPoints()) {
+            points_normals[point].push_back(normal);
+        }
+    }
+    for (auto it = points_normals.constBegin(); it != points_normals.constEnd(); ++it) {
+        for (const auto &normal : it.value()) {
+            normals_of_points_[it.key()] += normal;
+        }
+        normals_of_points_[it.key()] /= it.value().size();
     }
 }
 
 void CarcasModel::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
 }
-
 
 CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &color, const Point &center)     // Центр сферы
 {
@@ -63,3 +73,4 @@ CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &c
 
     return CarcasModel(triangles, color);
 }
+QVector<Triangle> CarcasModel::GetTriangles() const noexcept { return triangles_; }

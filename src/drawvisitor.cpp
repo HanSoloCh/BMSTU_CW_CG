@@ -71,9 +71,6 @@ void DrawVisitor::Visit(const Triangle &triangle) {
     QVector<Point> points = triangle.GetPoints();
 
     int ind = calcInd(points[0], points[1], points[2]);
-    if (std::isnan(ind) || ind <= 0) {
-        return;
-    }
 
     for (auto &point : points) {
         point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
@@ -90,7 +87,7 @@ void DrawVisitor::Visit(const Triangle &triangle) {
 }
 
 void DrawVisitor::DrawTriangle(const Point &p0, const Point &p1, const Point &p2) {
-    // Преобразование точек в QPoint для удобства работы
+
     Point pts[3] = {
         p0, p1, p2
     };

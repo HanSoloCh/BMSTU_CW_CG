@@ -12,5 +12,9 @@ void Point::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
 }
 
+bool Point::operator==(const Point &p) {
+    return x() == p.x() && y() == p.y() && z() == p.z();
+}
+
 
 

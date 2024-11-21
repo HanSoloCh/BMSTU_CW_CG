@@ -22,6 +22,8 @@ public:
 
     void Accept(BaseDrawVisitor &visitor) const override;
 
+    bool operator==(const Point &p);
+
 private:
     double h_;
 };

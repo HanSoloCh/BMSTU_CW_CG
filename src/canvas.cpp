@@ -64,16 +64,20 @@ void Canvas::paintEvent(QPaintEvent *event)
 
     // AddModel(std::make_shared<Triangle>(A, B, C, Qt::green));
 
-    AddModel(std::make_shared<CarcasModel>(GenerateShape(2, 10, 10, Qt::green, Point(0, 0, 8))));
+    AddModel(std::make_shared<CarcasModel>(GenerateShape(2, 100, 100, Qt::green, Point(0, 0, 8))));
 
     AbstractStrategyProjection *strategy = new PerspectivStrategyProjection();
 
     // painter.drawLine(strategy->ProjectPoint({0, 0, 3}, {1000, 1000}), strategy->ProjectPoint({10, 10, 3}, {1000, 1000}));
     DrawVisitor visitor(&painter, size(), strategy);
 
+    auto start = clock();
 
     for (auto &object : carcas_models_) {
         object->Accept(visitor);
     }
+    auto stop = clock();
+    qDebug() << stop - start;
     delete strategy;
+
 }
