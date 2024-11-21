@@ -68,7 +68,6 @@ int calcInd(const Point &p0, const Point &p1, const Point &p2) {
 }
 
 void DrawVisitor::Visit(const Triangle &triangle) {
-    // Вот тут вообще писец происходит
     QVector<Point> points = triangle.GetPoints();
 
     int ind = calcInd(points[0], points[1], points[2]);
@@ -80,33 +79,45 @@ void DrawVisitor::Visit(const Triangle &triangle) {
         point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
     }
 
-    Triangle tmp_triangle(points);
-
     // // Сортировка по y
     std::sort(points.begin(), points.end(), [](const Point &p1, const Point &p2) {
         return p1.y() < p2.y();
     });
 
     SetColor(IntensityColor(triangle.GetColor(), ind));
-    DrawTriangle(tmp_triangle);
+    DrawTriangle(points[0], points[1], points[2]);
     ResetColor();
 }
 
-void DrawVisitor::DrawTriangle(Triangle &triangle) {
-    // bbox_min_x = std::max(bbox_min_x, 0);
-    // bbox_min_y = std::max(bbox_min_y, 0);
-    // bbox_max_x = std::min(bbox_max_x, static_cast<int>(z_buffer_.size()) - 1);
-    // bbox_max_y = std::min(bbox_max_y, static_cast<int>(z_buffer_[0].size()) - 1);
+void DrawVisitor::DrawTriangle(const Point &p0, const Point &p1, const Point &p2) {
+    // Преобразование точек в QPoint для удобства работы
+    Point pts[3] = {
+        p0, p1, p2
+    };
 
-    for (int x = triangle.GetMinX(); x <= static_cast<int>(triangle.GetMaxX()); ++x) {
-        for (int y = triangle.GetMinY(); y <= static_cast<int>(triangle.GetMaxY()); ++y) {
+    // Определение границ треугольника
+    int bbox_min_x = std::min({pts[0].x(), pts[1].x(), pts[2].x()});
+    int bbox_min_y = std::min({pts[0].y(), pts[1].y(), pts[2].y()});
+    int bbox_max_x = std::max({pts[0].x(), pts[1].x(), pts[2].x()});
+    int bbox_max_y = std::max({pts[0].y(), pts[1].y(), pts[2].y()});
 
-            if (triangle.IsContains(Point(x, y))) {
+    bbox_min_x = std::max(bbox_min_x, 0);
+    bbox_min_y = std::max(bbox_min_y, 0);
+    bbox_max_x = std::min(bbox_max_x, static_cast<int>(z_buffer_.size()) - 1);
+    bbox_max_y = std::min(bbox_max_y, static_cast<int>(z_buffer_[0].size()) - 1);
 
-                // Вот в этой части два раза одно и то же считается. Мб как-то поправить
-                QVector<Point> points = triangle.GetPoints();
+    for (int x = bbox_min_x; x <= bbox_max_x; ++x) {
+        for (int y = bbox_min_y; y <= bbox_max_y; ++y) {
+            // Вычисляем барицентрические координаты
+            double denom = (pts[1].y() - pts[2].y()) * (pts[0].x() - pts[2].x()) + (pts[2].x() - pts[1].x()) * (pts[0].y() - pts[2].y());
+            double alpha = ((pts[1].y() - pts[2].y()) * (x - pts[2].x()) + (pts[2].x() - pts[1].x()) * (y - pts[2].y())) / denom;
+            double beta = ((pts[2].y() - pts[0].y()) * (x - pts[2].x()) + (pts[0].x() - pts[2].x()) * (y - pts[2].y())) / denom;
+            double gamma = 1.0 - alpha - beta;
+
+            // Проверяем, находится ли точка внутри треугольника
+            if (alpha >= 0 && beta >= 0 && gamma >= 0) {
                 // Интерполируем z-координату
-                double z = triangle.InterpolateValue(points[0].z(), points[1].z(), points[2].z(), Point(x, y));
+                double z = alpha * p0.z() + beta * p1.z() + gamma * p2.z();
                 z = 1 / z;
                 // Проверяем и обновляем z-буфер
                 if (z > z_buffer_[x][y]) {
