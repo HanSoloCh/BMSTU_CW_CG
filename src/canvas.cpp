@@ -23,7 +23,7 @@ void Canvas::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
+    // painter.setRenderHint(QPainter::Antialiasing);
 
     Point A(-0.5, 1, 8);
     Point B(-2.5, 1, 8);
@@ -64,10 +64,11 @@ void Canvas::paintEvent(QPaintEvent *event)
 
     // AddModel(std::make_shared<Triangle>(A, B, C, Qt::green));
 
-    AddModel(std::make_shared<CarcasModel>(GenerateShape(1, 20, 20, Qt::green, Point(0, 0, 6))));
+    AddModel(std::make_shared<CarcasModel>(GenerateShape(2, 10, 10, Qt::green, Point(0, 0, 8))));
 
+    AbstractStrategyProjection *strategy = new PerspectivStrategyProjection();
 
-    PerspectivStrategyProjection *strategy = new PerspectivStrategyProjection();
+    // painter.drawLine(strategy->ProjectPoint({0, 0, 3}, {1000, 1000}), strategy->ProjectPoint({10, 10, 3}, {1000, 1000}));
     DrawVisitor visitor(&painter, size(), strategy);
 
 

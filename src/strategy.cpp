@@ -22,3 +22,12 @@ QPointF PerspectivStrategyProjection::ViewportToCanvas(double x, double y, const
     return QPointF(x * canvas_size.width() / kViewportWidth + canvas_size.width() / 2,
                    -y * canvas_size.height() / kViewportHeight + canvas_size.height() / 2);
 }
+
+
+
+Point NewStrategy::ProjectPoint(const Point &point, const QSize &canvas_size) const
+{
+    return Point((point.x() / (1 - point.z() / kDistance) + canvas_size.width() / 2),
+                 (-point.y() / (1 - point.z() / kDistance)) + canvas_size.height() / 2,
+                 point.z());
+}

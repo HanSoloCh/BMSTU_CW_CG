@@ -16,12 +16,25 @@ public:
     void Visit(const AbstractModel &abstractModel) {
         Q_UNUSED(abstractModel);
     };
+
+    void SetColor(const QColor &color) {
+        color_ = painter_->pen().color();
+        painter_->setPen(color);
+    }
+
+    void ResetColor() {
+        painter_->setPen(color_);
+    }
+
     virtual void Visit(const Point &point) = 0;
     virtual void Visit(const Triangle &triangle) = 0;
     virtual void Visit(const CarcasModel &carcas_mode) = 0;
 
 protected:
     QPainter * const painter_;
+
+private:
+    QColor color_;
 };
 
 class DrawVisitor : public BaseDrawVisitor {
@@ -35,8 +48,8 @@ public:
 
     static QVector<double> Interpolate(double x0, double y0, double x1, double y1);
 protected:
-    void DrawPoint(const Point &point);
-    void DrawTriangle(const Point &p0, const Point &p1, const Point &p2);
+    void DrawPoint(Point &point);
+    void DrawTriangle(Triangle &triangle);
 
 
 private:

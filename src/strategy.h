@@ -32,5 +32,15 @@ private:
     const int kDistance;
 };
 
+class NewStrategy: public AbstractStrategyProjection {
+public:
+    explicit NewStrategy(int distance = 1) : kDistance(distance) {}
+
+    Point ProjectPoint(const Point &point, const QSize &canvas_size) const override;
+
+private:
+    const int kDistance;
+};
+
 
 #endif // STRATEGY_H
