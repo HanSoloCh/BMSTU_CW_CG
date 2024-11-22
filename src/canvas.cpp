@@ -23,30 +23,30 @@ void Canvas::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QPainter painter(this);
-    // painter.setRenderHint(QPainter::Antialiasing);
 
-    Point A(-0.5, 1, 8);
-    Point B(-2.5, 1, 8);
-    Point C(-2.5, -1, 8);
-    Point D(-0.5, -1, 8);
+    // Point A(-0.5, 1, 8);
+    // Point B(-2.5, 1, 8);
+    // Point C(-2.5, -1, 8);
+    // Point D(-0.5, -1, 8);
 
-    Point E(-0.5, 1, 6);
-    Point F(-2.5, 1, 6);
-    Point G(-2.5, -1, 6);
-    Point H(-0.5, -1, 6);
+    // Point E(-0.5, 1, 6);
+    // Point F(-2.5, 1, 6);
+    // Point G(-2.5, -1, 6);
+    // Point H(-0.5, -1, 6);
 
-    std::shared_ptr<Triangle> t1 = std::make_shared<Triangle>(QVector<Point>{A, B, C}, Qt::red);
-    std::shared_ptr<Triangle> t2 = std::make_shared<Triangle>(QVector<Point>{A, C, D}, Qt::red);
-    std::shared_ptr<Triangle> t3 = std::make_shared<Triangle>(QVector<Point>{E, A, D}, Qt::green);
-    std::shared_ptr<Triangle> t4 = std::make_shared<Triangle>(QVector<Point>{E, D, H}, Qt::green);
-    std::shared_ptr<Triangle> t5 = std::make_shared<Triangle>(QVector<Point>{F, E, H}, Qt::cyan);
-    std::shared_ptr<Triangle> t6 = std::make_shared<Triangle>(QVector<Point>{F, H, G}, Qt::cyan);
-    std::shared_ptr<Triangle> t7 = std::make_shared<Triangle>(QVector<Point>{B, F, G}, Qt::yellow);
-    std::shared_ptr<Triangle> t8 = std::make_shared<Triangle>(QVector<Point>{B, F, C}, Qt::yellow);
-    std::shared_ptr<Triangle> t9 = std::make_shared<Triangle>(QVector<Point>{E, F, B}, Qt::white);
-    std::shared_ptr<Triangle> t10 = std::make_shared<Triangle>(QVector<Point>{E, B, A}, Qt::white);
-    std::shared_ptr<Triangle> t11 = std::make_shared<Triangle>(QVector<Point>{C, G, H}, Qt::blue);
-    std::shared_ptr<Triangle> t12 = std::make_shared<Triangle>(QVector<Point>{C, H, D}, Qt::blue);
+
+    // std::shared_ptr<Triangle> t1 = std::make_shared<Triangle>(A, B, C, Qt::red);
+    // std::shared_ptr<Triangle> t2 = std::make_shared<Triangle>({A, C, D}, Qt::red);
+    // std::shared_ptr<Triangle> t3 = std::make_shared<Triangle>({E, A, D}, Qt::green);
+    // std::shared_ptr<Triangle> t4 = std::make_shared<Triangle>(QVector<Point>{E, D, H}, Qt::green);
+    // std::shared_ptr<Triangle> t5 = std::make_shared<Triangle>(QVector<Point>{F, E, H}, Qt::cyan);
+    // std::shared_ptr<Triangle> t6 = std::make_shared<Triangle>(QVector<Point>{F, H, G}, Qt::cyan);
+    // std::shared_ptr<Triangle> t7 = std::make_shared<Triangle>(QVector<Point>{B, F, G}, Qt::yellow);
+    // std::shared_ptr<Triangle> t8 = std::make_shared<Triangle>(QVector<Point>{B, F, C}, Qt::yellow);
+    // std::shared_ptr<Triangle> t9 = std::make_shared<Triangle>(QVector<Point>{E, F, B}, Qt::white);
+    // std::shared_ptr<Triangle> t10 = std::make_shared<Triangle>(QVector<Point>{E, B, A}, Qt::white);
+    // std::shared_ptr<Triangle> t11 = std::make_shared<Triangle>(QVector<Point>{C, G, H}, Qt::blue);
+    // std::shared_ptr<Triangle> t12 = std::make_shared<Triangle>(QVector<Point>{C, H, D}, Qt::blue);
 
 
     // AddModel(t1);

@@ -49,8 +49,7 @@ public:
     static QVector<double> Interpolate(double x0, double y0, double x1, double y1);
 protected:
     void DrawPoint(Point &point);
-    void DrawTriangle(const Point &p0, const Point &p1, const Point &p2);
-
+    void DrawTriangle(std::array<Point, 3> points);
 
 private:
     QSize canvas_size_;

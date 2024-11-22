@@ -60,29 +60,28 @@ QColor IntensityColor(const QColor &color, double intensity) {
 }
 
 
-int calcInd(const Point &p0, const Point &p1, const Point &p2) {
+int calcInd(const Triangle &triangle) {
     QVector3D light(0, 0, -1);
-    QVector3D n = QVector3D::normal(p2 - p0, p1 - p0);
-    double ind = QVector3D::dotProduct(n, light);
+    double ind = QVector3D::dotProduct(triangle.CalculateNormal(), light);
     return ind * 255;
 }
 
 void DrawVisitor::Visit(const Triangle &triangle) {
-    QVector<Point> points = triangle.GetPoints();
+    int ind = calcInd(triangle);
 
-    int ind = calcInd(points[0], points[1], points[2]);
-
+    std::array<Point, 3> points = triangle.GetPoints();
     for (auto &point : points) {
         point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
     }
 
-    // // Сортировка по y
+    // Сортировка по y
     std::sort(points.begin(), points.end(), [](const Point &p1, const Point &p2) {
         return p1.y() < p2.y();
     });
 
+    Triangle tmp_triangle(points);
     SetColor(IntensityColor(triangle.GetColor(), ind));
-    DrawTriangle(points[0], points[1], points[2]);
+    DrawTriangle(tmp_triangle[0], tmp_triangle[1], tmp_triangle[2]);
     ResetColor();
 }
 

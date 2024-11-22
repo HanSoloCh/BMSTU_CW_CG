@@ -4,12 +4,14 @@
 
 #include <qdebug.h>
 
-// Qt почему-то считает, что я нигде не использую эту функцию
 [[maybe_unused]] static uint qHash(const Point &point, uint seed) {
-    return qHash(point.x(), seed) ^
-           qHash(point.y(), seed) ^
-           qHash(point.z(), seed);
+    Q_UNUSED(seed);
+    size_t hash_x = std::hash<double>()(point.x());
+    size_t hash_y = std::hash<double>()(point.y());
+    size_t hash_z = std::hash<double>()(point.z());
+    return hash_x ^ (hash_y << 1) ^ (hash_z << 2);
 }
+
 
 CarcasModel::CarcasModel(const QVector<Triangle> &triangles, const QColor &color)
     : AbstractModel(color)
@@ -64,10 +66,10 @@ CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &c
                      center.z() + radius * cos(phi2));
 
             // Верхний треугольник
-            triangles.push_back(Triangle(QVector<Point>{p1, p2, p4}, color));
+            triangles.push_back(Triangle({p1, p2, p4}, color));
 
             // Нижний треугольник
-            triangles.push_back(Triangle(QVector<Point>{p1, p4, p3}, color));
+            triangles.push_back(Triangle({p1, p4, p3}, color));
         }
     }
 

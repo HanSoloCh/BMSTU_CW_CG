@@ -10,17 +10,18 @@
 
 class Triangle: public AbstractModel {
 public:
-    Triangle(const Point &p1, const Point &p2, const Point &p3, const QColor &color = Qt::white);
-    explicit Triangle(const QVector<Point> &points, const QColor &color = Qt::white);
+    Triangle(const Point &p0, const Point &p1, const Point &p2, const QColor &color = Qt::white);
+    explicit Triangle(const std::array<Point, 3> &points, const QColor &color = Qt::white);
+    explicit Triangle(const Point points[3], const QColor &color = Qt::white);
 
     ~Triangle() = default;
 
-    static bool IsTriangle(const Point &p1, const Point &p2, const Point &p3) noexcept;
-    static bool IsTriangle(const QVector<Point> &points) noexcept;
-
-    QVector<Point> GetPoints() const noexcept;
+    std::array<Point, 3> GetPoints() const noexcept;
 
     void Accept(BaseDrawVisitor &visitor) const override;
+
+    static bool IsTriangle(const Point &p1, const Point &p2, const Point &p3) noexcept;
+    static bool IsTriangle(const QVector<Point> &points) noexcept;
 
     double GetMaxX() const noexcept;
     double GetMaxY() const noexcept;
@@ -29,6 +30,9 @@ public:
     double GetMinX() const noexcept;
     double GetMinY() const noexcept;
     double GetMinZ() const noexcept;
+
+    Point operator[](int i) noexcept;
+    Point operator[](int i) const noexcept;
 
     QVector3D CalculateNormal() const noexcept;
 
@@ -39,7 +43,7 @@ public:
     T InterpolateValue(const T &value_in_p0, const T &value_in_p1, const T &value_in_p2, const Point &cur_point);
 
 private:
-    QVector<Point> points_;
+    std::array<Point, 3> points_;
 };
 
 template<typename T>

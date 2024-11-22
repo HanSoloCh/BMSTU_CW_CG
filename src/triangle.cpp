@@ -3,13 +3,20 @@
 #include "drawvisitor.h"
 
 
-Triangle::Triangle(const Point &p1, const Point &p2, const Point &p3, const QColor &color)
+Triangle::Triangle(const Point &p0, const Point &p1, const Point &p2, const QColor &color)
     : AbstractModel(color)
-    , points_({p1, p2, p3}) {}
+    , points_{p0, p1, p2} {
+}
 
-Triangle::Triangle(const QVector<Point> &points, const QColor &color)
+Triangle::Triangle(const std::array<Point, 3> &points, const QColor &color)
     : AbstractModel(color)
-    , points_(points) {}
+    , points_(points) {
+}
+
+Triangle::Triangle(const Point points[3], const QColor &color)
+    : AbstractModel(color)
+    , points_({points[0], points[1], points[2]}) {
+}
 
 void Triangle::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
@@ -39,8 +46,16 @@ double Triangle::GetMinZ() const noexcept {
     return std::min({points_[0].z(), points_[1].z(), points_[2].z()});
 }
 
+Point Triangle::operator[](int i) noexcept {
+    return points_[i];
+}
+
+Point Triangle::operator[](int i) const noexcept {
+    return points_[i];
+}
+
 QVector3D Triangle::CalculateNormal() const noexcept {
-    QVector<Point> points = GetPoints();
+    std::array<Point, 3> points = GetPoints();
     return QVector3D::normal(points[2] - points[0], points[1] - points[0]);
 }
 
@@ -52,4 +67,5 @@ bool Triangle::IsContains(const Point &p0) {
 
     return alpha >= 0 && beta >= 0 && gamma >= 0;
 }
-QVector<Point> Triangle::GetPoints() const noexcept { return points_; }
+
+std::array<Point, 3> Triangle::GetPoints() const noexcept { return points_; }
