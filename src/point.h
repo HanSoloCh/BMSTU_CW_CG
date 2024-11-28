@@ -2,12 +2,12 @@
 #define POINT_H
 
 #include <QColor>
-#include <QVector3D>
+#include <QVector4D>
 #include <QPointF>
 
 #include "abstractmodel.h"
 
-class Point: public AbstractModel, public QVector3D {
+class Point: public AbstractModel, public QVector4D {
 public:
     Point(double x = 0.0, double y = 0.0, double z = 0.0, const QColor &color = Qt::white);
     Point(QPoint p, double z, const QColor &color = Qt::white);

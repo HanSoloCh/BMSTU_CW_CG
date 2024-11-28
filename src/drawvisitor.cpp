@@ -1,5 +1,8 @@
 #include "drawvisitor.h"
 
+#include <QVector4D>
+
+#include <QDebug>
 
 QVector<double> DrawVisitor::Interpolate(double x0, double y0, double x1, double y1) {
     if (x0 == x1) {
@@ -70,20 +73,24 @@ void DrawVisitor::Visit(const Triangle &triangle) {
     int ind = calcInd(triangle);
 
     std::array<Point, 3> points = triangle.GetPoints();
+    // resource_mutex.lock();
     for (auto &point : points) {
         point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
     }
-
+    // resource_mutex.unlock();
     // Сортировка по y
     std::sort(points.begin(), points.end(), [](const Point &p1, const Point &p2) {
         return p1.y() < p2.y();
     });
+
 
     Triangle tmp_triangle(points);
     SetColor(IntensityColor(triangle.GetColor(), ind));
     DrawTriangle(tmp_triangle[0], tmp_triangle[1], tmp_triangle[2]);
     ResetColor();
 }
+
+
 
 void DrawVisitor::DrawTriangle(const Point &p0, const Point &p1, const Point &p2) {
 
@@ -127,8 +134,8 @@ void DrawVisitor::DrawTriangle(const Point &p0, const Point &p1, const Point &p2
 
 
 void DrawVisitor::Visit(const CarcasModel &carcas_model) {
-    for (const auto &triangles : carcas_model.GetTriangles()) {
-        triangles.Accept(*this);
+    for (const auto &triangle : carcas_model.GetTriangles()) {
+        triangle.Accept(*this);
     }
 }
 

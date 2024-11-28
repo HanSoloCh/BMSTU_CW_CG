@@ -6,16 +6,16 @@
 
 Point::Point(double x, double y, double z, const QColor &color)
     : AbstractModel(color)
-    , QVector3D(x, y, z)
+    , QVector4D(x, y, z, 0)
 {}
 
 Point::Point(QPoint p, double z, const QColor &color)
     : AbstractModel(color)
-    , QVector3D(p.x(), p.y(), z) {}
+    , QVector4D(p.x(), p.y(), z, 0) {}
 
 Point::Point(QPointF p, double z, const QColor &color)
     : AbstractModel(color)
-    , QVector3D(p.x(), p.y(), z) {}
+    , QVector4D(p.x(), p.y(), z, 0) {}
 
 void Point::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);

@@ -55,8 +55,9 @@ Point Triangle::operator[](int i) const noexcept {
 }
 
 QVector3D Triangle::CalculateNormal() const noexcept {
-    std::array<Point, 3> points = GetPoints();
-    return QVector3D::normal(points[2] - points[0], points[1] - points[0]);
+    QVector3D p20 = ((*this)[2] - (*this)[0]).toVector3D();
+    QVector3D p10 = ((*this)[1] - (*this)[0]).toVector3D();
+    return QVector3D::normal(p20, p10);
 }
 
 bool Triangle::IsContains(const Point &p0) {
