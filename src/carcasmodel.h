@@ -5,23 +5,32 @@
 #include <QHash>
 
 #include "abstractmodel.h"
-#include "triangle.h"
+#include "point.h"
 
-class CarcasModel: public AbstractModel {
+class CarcasModel : public AbstractModel {
 public:
-    explicit CarcasModel(const QVector<Triangle> &triangles, const QColor &color = Qt::white);
+    explicit CarcasModel(const QVector<Point> &points,
+                         const QVector<std::array<int, 3>> &triangles,
+                         const QColor &color,
+                         QVector<QColor> colors);
 
-    QVector<Triangle> GetTriangles() const noexcept;
+    QVector<Point> GetPoints() const noexcept;
+    QVector<std::array<int, 3>> GetTriangles() const noexcept;
+    std::array<QVector3D, 3> GetNormals(const std::array<int, 3> &triangle) const;
+    std::array<Point, 3> GetTrianglePoints(std::array<int, 3> triangle) const noexcept;
 
     void Accept(BaseDrawVisitor &visitor) const override;
+    QVector<QColor> colors_;
 
 private:
-    QVector<Triangle> triangles_;
+    QVector<Point> points_; // Вершины
+    QVector<std::array<int, 3>> triangles_; // Индексы вершин
 
-    QHash<Point, QVector3D> normals_of_points_;
+    QVector<QVector3D> normals_; // Нормали (соответственно индексам вершин)
 };
 
 
 CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &color, const Point &center);
+CarcasModel GenerateShape();
 
 #endif // CARCASMODEL_H

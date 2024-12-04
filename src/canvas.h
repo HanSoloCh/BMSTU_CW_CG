@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "abstractmodel.h"
+#include "light.h"
 
 
 class Canvas : public QWidget
@@ -15,13 +16,15 @@ class Canvas : public QWidget
 public:
     explicit Canvas(QWidget *parent = nullptr);
 
-    void AddModel(const std::shared_ptr<AbstractModel> &carcas_model);
+    void AddModel(const std::shared_ptr<AbstractModel> carcas_model);
+    void AddLight(const std::shared_ptr<AbstractLight> light);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
     QVector<std::shared_ptr<AbstractModel>> carcas_models_;
+    QVector<std::shared_ptr<AbstractLight>> light_;
 };
 
 #endif // CANVAS_H

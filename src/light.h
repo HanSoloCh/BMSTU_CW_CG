@@ -19,12 +19,14 @@ private:
 
 
 class AmbientLight: public AbstractLight {
+public:
     AmbientLight(double intensity);
 
     double CalculateIntensityInPoint(const Point &point, const QVector3D &normal) const override;
 };
 
 class PointLight: public AbstractLight {
+public:
     PointLight(double intensity, const Point &position);
     PointLight(double intensity, double x, double y, double z);
 
@@ -35,6 +37,7 @@ private:
 };
 
 class DirectionLight: public AbstractLight {
+public:
     DirectionLight(double intensity, const QVector3D &direction);
     DirectionLight(double intensity, double x, double y, double z);
 

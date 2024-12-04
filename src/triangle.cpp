@@ -55,18 +55,30 @@ Point Triangle::operator[](int i) const noexcept {
 }
 
 QVector3D Triangle::CalculateNormal() const noexcept {
-    QVector3D p20 = ((*this)[2] - (*this)[0]).toVector3D();
     QVector3D p10 = ((*this)[1] - (*this)[0]).toVector3D();
-    return QVector3D::normal(p20, p10);
+    QVector3D p20 = ((*this)[2] - (*this)[0]).toVector3D();
+    return QVector3D::normal(p10, p20);
 }
 
-bool Triangle::IsContains(const Point &p0) {
-    double denom = (points_[1].y() - points_[2].y()) * (points_[0].x() - points_[2].x()) + (points_[2].x() - points_[1].x()) * (points_[0].y() - points_[2].y());
-    double alpha = ((points_[1].y() - points_[2].y()) * (p0.x() - points_[2].x()) + (points_[2].x() - points_[1].x()) * (p0.y() - points_[2].y())) / denom;
-    double beta = ((points_[2].y() - points_[0].y()) * (p0.x() - points_[2].x()) + (points_[0].x() - points_[2].x()) * (p0.y() - points_[2].y())) / denom;
-    double gamma = 1.0 - alpha - beta;
+// bool Triangle::IsContains(const Point &p0) const {
+//     auto [denom, alpha, beta, gamma] = chashed_barycentric_.barycentric_coordinates_;
+//     if (!chashed_barycentric_.is_actual_) {
+//         denom = (points_[1].y() - points_[2].y()) * (points_[0].x() - points_[2].x()) + (points_[2].x() - points_[1].x()) * (points_[0].y() - points_[2].y());
+//         alpha = ((points_[1].y() - points_[2].y()) * (p0.x() - points_[2].x()) + (points_[2].x() - points_[1].x()) * (p0.y() - points_[2].y())) / denom;
+//         beta = ((points_[2].y() - points_[0].y()) * (p0.x() - points_[2].x()) + (points_[0].x() - points_[2].x()) * (p0.y() - points_[2].y())) / denom;
+//         gamma = 1.0 - alpha - beta;
+//         chashed_barycentric_.barycentric_coordinates_ = {denom, alpha, beta, gamma};
+//         chashed_barycentric_.is_actual_ = true;
+//     }
 
-    return alpha >= 0 && beta >= 0 && gamma >= 0;
-}
+//     return alpha >= 0 && beta >= 0 && gamma >= 0;
+// }
 
 std::array<Point, 3> Triangle::GetPoints() const noexcept { return points_; }
+
+void Triangle::SwapVertices() {
+    Point temp = (*this)[1];
+    (*this)[1] = (*this)[2];
+    (*this)[2] = temp;
+}
+
