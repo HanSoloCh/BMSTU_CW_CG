@@ -2,7 +2,6 @@
 #define CARCASMODEL_H
 
 #include <QColor>
-#include <QHash>
 
 #include "abstractmodel.h"
 #include "point.h"
@@ -11,8 +10,7 @@ class CarcasModel : public AbstractModel {
 public:
     explicit CarcasModel(const QVector<Point> &points,
                          const QVector<std::array<int, 3>> &triangles,
-                         const QColor &color,
-                         QVector<QColor> colors);
+                         const QColor &color);
 
     QVector<Point> GetPoints() const noexcept;
     QVector<std::array<int, 3>> GetTriangles() const noexcept;
@@ -31,6 +29,5 @@ private:
 
 
 CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &color, const Point &center);
-CarcasModel GenerateShape();
 
 #endif // CARCASMODEL_H

@@ -2,8 +2,6 @@
 
 #include <QVector4D>
 
-#include <QDebug>
-
 
 BaseDrawVisitor::~BaseDrawVisitor() {}
 
@@ -82,8 +80,6 @@ void DrawVisitor::Visit(const Triangle &triangle) {
 
 
 void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts) {
-
-    // std::array<Point, 3> pts{p1, p2, p3};
     // Определение границ треугольника
     int bbox_min_x = std::min({pts[0].x(), pts[1].x(), pts[2].x()});
     int bbox_min_y = std::min({pts[0].y(), pts[1].y(), pts[2].y()});
@@ -118,24 +114,36 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts) {
     }
 }
 
+void SortPointsAndNormals(std::array<Point, 3> &points, std::array<QVector3D, 3> &normals) {
+    std::array<std::pair<Point, QVector3D>, 3> point_normal_pairs;
+    for (size_t i = 0; i < 3; ++i) {
+        point_normal_pairs[i] = {points[i], normals[i]};
+    }
+
+    // Сортировка пар по y-координате точки
+    std::sort(point_normal_pairs.begin(), point_normal_pairs.end(),
+              [](const std::pair<Point, QVector3D> &p1, const std::pair<Point, QVector3D> &p2) {
+                  return p1.first.y() < p2.first.y();
+              });
+
+    // Разделение пар обратно на точки и нормали
+    for (size_t i = 0; i < 3; ++i) {
+        points[i] = point_normal_pairs[i].first;
+        normals[i] = point_normal_pairs[i].second;
+    }
+}
+
 // Происходит издевательство над паттернами и тасовым
 void DrawVisitor::Visit(const Triangle &triangle, const std::array<QVector3D, 3> &normals) {
-    std::array<Point, 3> points = triangle.GetPoints();
+    std::array<Point, 3> points = triangle.GetPoints();    
 
     for (auto &point : points) {
         point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
     }
 
-    // Сортировка по y
-    std::sort(points.begin(), points.end(), [](const Point &p1, const Point &p2) {
-        return p1.y() < p2.y();
-    });
-
-    // SetColor(triangle.GetColor());
     DrawTriangle({points[0], points[1], points[2]},
                  normals,
                  triangle.GetColor());
-    // ResetColor();
 }
 
 
@@ -169,6 +177,7 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts, const std::array
 
                     QVector3D normal_in_point = alpha * normals[0] + beta * normals[1] + gamma * normals[2];
                     int intesity = calculateIntensity(Point(x, y), normal_in_point);
+
                     SetColor(IntensityColor(color, intesity));
                     painter_->drawPoint(x, y);
                     ResetColor();
@@ -186,14 +195,12 @@ int DrawVisitor::calculateIntensity(const Point &point, const QVector3D &normal)
     return intesity * 255;
 }
 
-// #include "triangle.h"
-
 void DrawVisitor::Visit(const CarcasModel &carcas_model) {
-    int i = 0;
     for (const auto &triangle : carcas_model.GetTriangles()) {
         std::array<Point, 3> points = carcas_model.GetTrianglePoints(triangle);
-        Visit(Triangle(points, carcas_model.colors_[i]), carcas_model.GetNormals(triangle));
-        ++i;
+        std::array<QVector3D, 3> normals = carcas_model.GetNormals(triangle);
+        SortPointsAndNormals(points, normals);
+        Visit(Triangle(points, carcas_model.GetColor()), normals);
     }
 }
 
