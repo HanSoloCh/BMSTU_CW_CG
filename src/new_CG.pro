@@ -13,6 +13,8 @@ SOURCES += \
     canvas.cpp \
     carcasmodel.cpp \
     drawvisitor.cpp \
+    facade.cpp \
+    light.cpp \
     main.cpp \
     mainwindow.cpp \
     point.cpp \
@@ -24,6 +26,8 @@ HEADERS += \
     canvas.h \
     carcasmodel.h \
     drawvisitor.h \
+    facade.h \
+    light.h \
     mainwindow.h \
     point.h \
     strategy.h \

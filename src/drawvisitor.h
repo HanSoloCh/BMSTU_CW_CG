@@ -2,7 +2,9 @@
 #define DRAWVISITOR_H
 
 #include <QPainter>
+#include <memory>
 
+#include "light.h"
 #include "point.h"
 #include "triangle.h"
 #include "carcasmodel.h"
@@ -39,23 +41,29 @@ private:
 
 class DrawVisitor : public BaseDrawVisitor {
 public:
-    DrawVisitor(QPainter *painter, QSize canvas_size, const AbstractStrategyProjection *projection);
+    DrawVisitor(QPainter *painter,
+                QSize canvas_size,
+                const AbstractStrategyProjection *projection,
+                QVector<std::shared_ptr<AbstractLight>> light);
     ~DrawVisitor() = default;
 
     void Visit(const Point &point) override;
     void Visit(const Triangle &triangle) override;
     void Visit(const CarcasModel &carcas_model) override;
+    void Visit(const Triangle &triangle, const std::array<QVector3D, 3> &normals);
 
-    static QVector<double> Interpolate(double x0, double y0, double x1, double y1);
+    // static QVector<double> Interpolate(double x0, double y0, double x1, double y1);
 protected:
     void DrawPoint(Point &point);
-    void DrawTriangle(Triangle &triangle);
+    void DrawTriangle(const std::array<Point, 3> &points);
+    void DrawTriangle(const std::array<Point, 3> &points, const std::array<QVector3D, 3> &normals, const QColor &color);
 
-
+    int calculateIntensity(const Point &point, const QVector3D &mormal) const;
 private:
     QSize canvas_size_;
     QVector<QVector<double>> z_buffer_;
     const AbstractStrategyProjection *projection_;
+    QVector<std::shared_ptr<AbstractLight>> light_;
 };
 
 #endif // DRAWVISITOR_H

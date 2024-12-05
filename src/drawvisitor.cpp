@@ -1,19 +1,7 @@
 #include "drawvisitor.h"
 
+#include <QVector4D>
 
-QVector<double> DrawVisitor::Interpolate(double x0, double y0, double x1, double y1) {
-    if (x0 == x1) {
-        return {y0};
-    }
-    QVector<double > values;
-    double k = (y1 - y0) / (x1- x0);
-    double y = y0;
-    for (int x = x0; x <= x1; ++x) {
-        values.push_back(y);
-        y += k;
-    }
-    return values;
-}
 
 BaseDrawVisitor::~BaseDrawVisitor() {}
 
@@ -21,11 +9,15 @@ BaseDrawVisitor::BaseDrawVisitor(QPainter *painter)
     : painter_(painter)
     , color_(painter->pen().color()) {}
 
-DrawVisitor::DrawVisitor(QPainter *painter, QSize canvas_size, const AbstractStrategyProjection *projection)
+DrawVisitor::DrawVisitor(QPainter *painter,
+                         QSize canvas_size,
+                         const AbstractStrategyProjection *projection,
+                         QVector<std::shared_ptr<AbstractLight> > light)
     : BaseDrawVisitor(painter)
     , canvas_size_(canvas_size)
     , z_buffer_(canvas_size_.height(), QVector<double>(canvas_size_.width(), 0.0))
-    , projection_(projection) {}
+    , projection_(projection)
+    , light_(light) {}
 
 
 void DrawVisitor::Visit(const Point &point) {
@@ -47,7 +39,7 @@ void DrawVisitor::DrawPoint(Point &point) {
 }
 
 
-QColor IntensityColor(const QColor &color, double intensity) {
+QColor IntensityColor(const QColor &color, int intensity) {
     if (intensity < 0) intensity = 0;
     if (intensity > 255) intensity = 255;
 
@@ -60,53 +52,57 @@ QColor IntensityColor(const QColor &color, double intensity) {
 }
 
 
-int calcInd(const Point &p0, const Point &p1, const Point &p2) {
+int calcInd(const Triangle &triangle) {
     QVector3D light(0, 0, -1);
-    QVector3D n = QVector3D::normal(p2 - p0, p1 - p0);
-    double ind = QVector3D::dotProduct(n, light);
+    double ind = QVector3D::dotProduct(triangle.CalculateNormal(), light);
     return ind * 255;
 }
 
 void DrawVisitor::Visit(const Triangle &triangle) {
-    // Вот тут вообще писец происходит
-    QVector<Point> points = triangle.GetPoints();
+    int ind = calcInd(triangle);
 
-    int ind = calcInd(points[0], points[1], points[2]);
-    if (std::isnan(ind) || ind <= 0) {
-        return;
-    }
+    std::array<Point, 3> points = triangle.GetPoints();
 
     for (auto &point : points) {
         point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
     }
 
-    Triangle tmp_triangle(points);
-
-    // // Сортировка по y
+    // Сортировка по y
     std::sort(points.begin(), points.end(), [](const Point &p1, const Point &p2) {
         return p1.y() < p2.y();
     });
 
     SetColor(IntensityColor(triangle.GetColor(), ind));
-    DrawTriangle(tmp_triangle);
+    DrawTriangle({points[0], points[1], points[2]});
     ResetColor();
 }
 
-void DrawVisitor::DrawTriangle(Triangle &triangle) {
-    // bbox_min_x = std::max(bbox_min_x, 0);
-    // bbox_min_y = std::max(bbox_min_y, 0);
-    // bbox_max_x = std::min(bbox_max_x, static_cast<int>(z_buffer_.size()) - 1);
-    // bbox_max_y = std::min(bbox_max_y, static_cast<int>(z_buffer_[0].size()) - 1);
 
-    for (int x = triangle.GetMinX(); x <= static_cast<int>(triangle.GetMaxX()); ++x) {
-        for (int y = triangle.GetMinY(); y <= static_cast<int>(triangle.GetMaxY()); ++y) {
 
-            if (triangle.IsContains(Point(x, y))) {
+void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts) {
+    // Определение границ треугольника
+    int bbox_min_x = std::min({pts[0].x(), pts[1].x(), pts[2].x()});
+    int bbox_min_y = std::min({pts[0].y(), pts[1].y(), pts[2].y()});
+    int bbox_max_x = std::max({pts[0].x(), pts[1].x(), pts[2].x()});
+    int bbox_max_y = std::max({pts[0].y(), pts[1].y(), pts[2].y()});
 
-                // Вот в этой части два раза одно и то же считается. Мб как-то поправить
-                QVector<Point> points = triangle.GetPoints();
+    bbox_min_x = std::max(bbox_min_x, 0);
+    bbox_min_y = std::max(bbox_min_y, 0);
+    bbox_max_x = std::min(bbox_max_x, static_cast<int>(z_buffer_.size()) - 1);
+    bbox_max_y = std::min(bbox_max_y, static_cast<int>(z_buffer_[0].size()) - 1);
+
+    for (int x = bbox_min_x; x <= bbox_max_x; ++x) {
+        for (int y = bbox_min_y; y <= bbox_max_y; ++y) {
+            // Вычисляем барицентрические координаты
+            double denom = (pts[1].y() - pts[2].y()) * (pts[0].x() - pts[2].x()) + (pts[2].x() - pts[1].x()) * (pts[0].y() - pts[2].y());
+            double alpha = ((pts[1].y() - pts[2].y()) * (x - pts[2].x()) + (pts[2].x() - pts[1].x()) * (y - pts[2].y())) / denom;
+            double beta = ((pts[2].y() - pts[0].y()) * (x - pts[2].x()) + (pts[0].x() - pts[2].x()) * (y - pts[2].y())) / denom;
+            double gamma = 1.0 - alpha - beta;
+
+            // Проверяем, находится ли точка внутри треугольника
+            if (alpha >= 0 && beta >= 0 && gamma >= 0) {
                 // Интерполируем z-координату
-                double z = triangle.InterpolateValue(points[0].z(), points[1].z(), points[2].z(), Point(x, y));
+                double z = alpha * pts[0].z() + beta * pts[1].z() + gamma * pts[2].z();
                 z = 1 / z;
                 // Проверяем и обновляем z-буфер
                 if (z > z_buffer_[x][y]) {
@@ -118,10 +114,92 @@ void DrawVisitor::DrawTriangle(Triangle &triangle) {
     }
 }
 
+void SortPointsAndNormals(std::array<Point, 3> &points, std::array<QVector3D, 3> &normals) {
+    std::array<std::pair<Point, QVector3D>, 3> point_normal_pairs;
+    for (size_t i = 0; i < 3; ++i) {
+        point_normal_pairs[i] = {points[i], normals[i]};
+    }
+
+    // Сортировка пар по y-координате точки
+    std::sort(point_normal_pairs.begin(), point_normal_pairs.end(),
+              [](const std::pair<Point, QVector3D> &p1, const std::pair<Point, QVector3D> &p2) {
+                  return p1.first.y() < p2.first.y();
+              });
+
+    // Разделение пар обратно на точки и нормали
+    for (size_t i = 0; i < 3; ++i) {
+        points[i] = point_normal_pairs[i].first;
+        normals[i] = point_normal_pairs[i].second;
+    }
+}
+
+// Происходит издевательство над паттернами и тасовым
+void DrawVisitor::Visit(const Triangle &triangle, const std::array<QVector3D, 3> &normals) {
+    std::array<Point, 3> points = triangle.GetPoints();    
+
+    for (auto &point : points) {
+        point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
+    }
+
+    DrawTriangle({points[0], points[1], points[2]},
+                 normals,
+                 triangle.GetColor());
+}
+
+
+void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts, const std::array<QVector3D, 3> &normals, const QColor &color) {
+    int bbox_min_x = std::min({pts[0].x(), pts[1].x(), pts[2].x()});
+    int bbox_min_y = std::min({pts[0].y(), pts[1].y(), pts[2].y()});
+    int bbox_max_x = std::max({pts[0].x(), pts[1].x(), pts[2].x()});
+    int bbox_max_y = std::max({pts[0].y(), pts[1].y(), pts[2].y()});
+
+    bbox_min_x = std::max(bbox_min_x, 0);
+    bbox_min_y = std::max(bbox_min_y, 0);
+    bbox_max_x = std::min(bbox_max_x, static_cast<int>(z_buffer_.size()) - 1);
+    bbox_max_y = std::min(bbox_max_y, static_cast<int>(z_buffer_[0].size()) - 1);
+
+    for (int x = bbox_min_x; x <= bbox_max_x; ++x) {
+        for (int y = bbox_min_y; y <= bbox_max_y; ++y) {
+            // Вычисляем барицентрические координаты
+            double denom = (pts[1].y() - pts[2].y()) * (pts[0].x() - pts[2].x()) + (pts[2].x() - pts[1].x()) * (pts[0].y() - pts[2].y());
+            double alpha = ((pts[1].y() - pts[2].y()) * (x - pts[2].x()) + (pts[2].x() - pts[1].x()) * (y - pts[2].y())) / denom;
+            double beta = ((pts[2].y() - pts[0].y()) * (x - pts[2].x()) + (pts[0].x() - pts[2].x()) * (y - pts[2].y())) / denom;
+            double gamma = 1.0 - alpha - beta;
+
+            // Проверяем, находится ли точка внутри треугольника
+            if (alpha >= 0 && beta >= 0 && gamma >= 0) {
+                // Интерполируем z-координату
+                double z = alpha * pts[0].z() + beta * pts[1].z() + gamma * pts[2].z();
+                z = 1 / z;
+                // Проверяем и обновляем z-буфер
+                if (z > z_buffer_[x][y]) {
+                    z_buffer_[x][y] = z;
+
+                    QVector3D normal_in_point = alpha * normals[0] + beta * normals[1] + gamma * normals[2];
+                    int intesity = calculateIntensity(Point(x, y), normal_in_point);
+
+                    SetColor(IntensityColor(color, intesity));
+                    painter_->drawPoint(x, y);
+                    ResetColor();
+                }
+            }
+        }
+    }
+}
+
+int DrawVisitor::calculateIntensity(const Point &point, const QVector3D &normal) const {
+    double intesity = 0;
+    for (const auto &light: light_) {
+        intesity += light->CalculateIntensityInPoint(point, normal);
+    }
+    return intesity * 255;
+}
 
 void DrawVisitor::Visit(const CarcasModel &carcas_model) {
-    for (const auto &triangles : carcas_model.GetTriangles()) {
-        triangles.Accept(*this);
+    for (const auto &triangle : carcas_model.GetTriangles()) {
+        std::array<Point, 3> points = carcas_model.GetTrianglePoints(triangle);
+        std::array<QVector3D, 3> normals = carcas_model.GetNormals(triangle);
+        Visit(Triangle(points, carcas_model.GetColor()), normals);
     }
 }
 

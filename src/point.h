@@ -2,19 +2,19 @@
 #define POINT_H
 
 #include <QColor>
-#include <QVector3D>
+#include <QVector4D>
 #include <QPointF>
 
 #include "abstractmodel.h"
 
-class Point: public AbstractModel, public QVector3D {
+class Point: public AbstractModel, public QVector4D {
 public:
-    Point(double x, double y, double z = 0, const QColor &color = Qt::white, double h = 1.0);
+    Point(double x = 0.0, double y = 0.0, double z = 0.0, const QColor &color = Qt::white);
+    Point(QPoint p, double z, const QColor &color = Qt::white);
+    Point(QPointF p, double z, const QColor &color = Qt::white);
+
     ~Point() = default;
 
-    double h() const {
-        return h_;
-    }
 
     operator QPointF() {
         return QPointF(x(), y());
@@ -22,8 +22,8 @@ public:
 
     void Accept(BaseDrawVisitor &visitor) const override;
 
-private:
-    double h_;
+    // bool operator<(const Point &p);
+    bool operator==(const Point &p) const noexcept;
 };
 
 #endif // POINT_H

@@ -1,15 +1,31 @@
 #include "point.h"
 
+#include <cmath>
+
 #include "drawvisitor.h"
 
-Point::Point(double x, double y, double z, const QColor &color, double h)
+Point::Point(double x, double y, double z, const QColor &color)
     : AbstractModel(color)
-    , QVector3D(x, y, z)
-    , h_(h)
+    , QVector4D(x, y, z, 0)
 {}
+
+Point::Point(QPoint p, double z, const QColor &color)
+    : AbstractModel(color)
+    , QVector4D(p.x(), p.y(), z, 0) {}
+
+Point::Point(QPointF p, double z, const QColor &color)
+    : AbstractModel(color)
+    , QVector4D(p.x(), p.y(), z, 0) {}
 
 void Point::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
+}
+
+bool Point::operator==(const Point &p) const noexcept {
+    double epsilon = std::numeric_limits<double>::epsilon();
+    return std::fabs(x() - p.x()) < epsilon &&
+           std::fabs(y() - p.y()) < epsilon &&
+           std::fabs(z() - p.z()) < epsilon;
 }
 
 
