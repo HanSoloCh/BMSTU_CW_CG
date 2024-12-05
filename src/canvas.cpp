@@ -11,9 +11,9 @@
 
 Canvas::Canvas(QWidget *parent)
     : QWidget(parent) {
-    AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, -1)));
+    AddLight(std::make_shared<DirectionLight>(1, QVector3D(1, 1, -1)));
 
-    AddModel(std::make_shared<CarcasModel>(GenerateShape(2, 50, 50, Qt::green, Point(0, 0, 8))));
+    AddModel(std::make_shared<CarcasModel>(GenerateShape(2, 10, 10, Qt::green, Point(0, 0, 8))));
 }
 
 void Canvas::AddModel(const std::shared_ptr<AbstractModel> carcas_model) {
@@ -29,7 +29,6 @@ void Canvas::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
     QPainter painter(this);
-
 
     AbstractStrategyProjection *strategy = new PerspectivStrategyProjection();
 
