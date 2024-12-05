@@ -4,7 +4,6 @@
 #include <memory>
 
 #include "carcasmodel.h"
-
 #include "strategy.h"
 #include "drawvisitor.h"
 
@@ -25,8 +24,7 @@ void Canvas::AddLight(const std::shared_ptr<AbstractLight> light) {
 }
 
 
-void Canvas::paintEvent(QPaintEvent *event)
-{
+void Canvas::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
 
@@ -35,11 +33,10 @@ void Canvas::paintEvent(QPaintEvent *event)
     DrawVisitor visitor(&painter, size(), strategy, light_);
 
     auto start = clock();
-    for (auto &object : carcas_models_) {
+    for (const auto &object : carcas_models_) {
         object->Accept(visitor);
     }
     auto stop = clock();
     qDebug() << stop - start;
     delete strategy;
-
 }

@@ -20,6 +20,8 @@ public:
 
     void Accept(BaseDrawVisitor &visitor) const override;
 
+    // void Transform(const QMatrix4x4 &trnsform_matrix) override;
+
     static bool IsTriangle(const Point &p1, const Point &p2, const Point &p3) noexcept;
     static bool IsTriangle(const QVector<Point> &points) noexcept;
 

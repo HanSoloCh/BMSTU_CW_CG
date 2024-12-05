@@ -19,14 +19,14 @@ public:
     std::array<Point, 3> GetTrianglePoints(const std::array<int, 3> &triangle) const noexcept;
 
     void Accept(BaseDrawVisitor &visitor) const override;
-    QVector<QColor> colors_;
 
+    // void Transform(const QMatrix4x4 &trnsform_matrix) override;
 private:
     QVector<Point> points_; // Вершины
     QVector<std::array<int, 3>> triangles_; // Индексы вершин
 
     QHash<Point, QVector3D> normals_;
-    // QVector<QVector3D> normals_; // Нормали (соответственно индексам вершин)
+    QVector<QVector3D> points_normals_;
 };
 
 

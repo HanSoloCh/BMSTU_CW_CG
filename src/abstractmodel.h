@@ -2,6 +2,7 @@
 #define ABSTRACTMODEL_H
 
 #include <QColor>
+#include <QMatrix4x4>
 
 class BaseDrawVisitor;
 
@@ -16,6 +17,8 @@ public:
     }
 
     virtual void Accept(BaseDrawVisitor &visitor) const = 0;
+    // По идее можно сделать visitor-ом
+    // virtual void Transform(const QMatrix4x4 &trnsform_matrix) = 0;
 private:
     QColor color_;
 };

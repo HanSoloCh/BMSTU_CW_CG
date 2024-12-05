@@ -2,12 +2,12 @@
 #define POINT_H
 
 #include <QColor>
-#include <QVector4D>
+#include <QVector3D>
 #include <QPointF>
 
 #include "abstractmodel.h"
 
-class Point: public AbstractModel, public QVector4D {
+class Point: public AbstractModel, public QVector3D {
 public:
     Point(double x = 0.0, double y = 0.0, double z = 0.0, const QColor &color = Qt::white);
     Point(QPoint p, double z, const QColor &color = Qt::white);
@@ -22,7 +22,8 @@ public:
 
     void Accept(BaseDrawVisitor &visitor) const override;
 
-    // bool operator<(const Point &p);
+    // void Transform(const QMatrix4x4 &trnsform_matrix) override;
+
     bool operator==(const Point &p) const noexcept;
 };
 

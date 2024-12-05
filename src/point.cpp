@@ -6,20 +6,24 @@
 
 Point::Point(double x, double y, double z, const QColor &color)
     : AbstractModel(color)
-    , QVector4D(x, y, z, 0)
+    , QVector3D(x, y, z)
 {}
 
 Point::Point(QPoint p, double z, const QColor &color)
     : AbstractModel(color)
-    , QVector4D(p.x(), p.y(), z, 0) {}
+    , QVector3D(p.x(), p.y(), z) {}
 
 Point::Point(QPointF p, double z, const QColor &color)
     : AbstractModel(color)
-    , QVector4D(p.x(), p.y(), z, 0) {}
+    , QVector3D(p.x(), p.y(), z) {}
 
 void Point::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
 }
+
+// void Point::Transform(const QMatrix4x4 &trnsform_matrix) {
+//     QVector3D::operator=(trnsform_matrix * *this);
+// }
 
 bool Point::operator==(const Point &p) const noexcept {
     double epsilon = std::numeric_limits<double>::epsilon();

@@ -15,24 +15,23 @@ CarcasModel::CarcasModel(const QVector<Point> &points,
                          const QColor &color)
     : AbstractModel(color)
     , points_(points)
-    , triangles_(triangles) {
-
-    QHash<Point, QVector<QVector3D>> points_normals;
+    , triangles_(triangles)
+    , points_normals_(points.size()) {
+    QVector<QVector<QVector3D>> points_normals(points.size());
 
     for (const auto &triangle : triangles) {
-        std::array<Point, 3> points = GetTrianglePoints(triangle);
-        QVector3D normal = Triangle(points, color).CalculateNormal();
+        QVector3D normal = Triangle(GetTrianglePoints(triangle), color).CalculateNormal();
 
-        for (const auto &point : points) {
-            points_normals[point].push_back(normal);
+        for (int point_index : triangle) {
+            points_normals[point_index].push_back(normal);
         }
     }
 
-    for (auto it = points_normals.constBegin(); it != points_normals.constEnd(); ++it) {
-        for (const auto &normal : it.value()) {
-            normals_[it.key()] += normal;
+    for (int i = 0; i < points_normals.size(); ++i) {
+        for (const auto &normal : points_normals[i]) {
+            points_normals_[i] += normal;
         }
-        normals_[it.key()] = (normals_[it.key()] / it.value().size()).normalized();
+        points_normals_[i] = (points_normals_[i] / points_normals[i].size()).normalized();
     }
 }
 
@@ -41,8 +40,7 @@ QVector<Point> CarcasModel::GetPoints() const noexcept { return points_; }
 QVector<std::array<int, 3>> CarcasModel::GetTriangles() const noexcept { return triangles_; }
 
 std::array<QVector3D, 3> CarcasModel::GetNormals(const std::array<int, 3> &triangle) const {
-    std::array<Point, 3> points = GetTrianglePoints(triangle);
-    return {normals_[points[0]], normals_[points[1]], normals_[points[2]]};
+    return {points_normals_[triangle[0]], points_normals_[triangle[1]], points_normals_[triangle[2]]};
 }
 
 std::array<Point, 3> CarcasModel::GetTrianglePoints(const std::array<int, 3> &triangle) const noexcept {
@@ -67,7 +65,7 @@ CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &c
     points.push_back(Point(center.x(), center.y(), center.z() + radius)); // Верхний полюс
     for (int i = 1; i < stacks; ++i) { // Исключаем полюса
         double phi = M_PI * i / stacks;
-        for (int j = 0; j <= slices; ++j) {
+        for (int j = 0; j < slices; ++j) { // Убираем точку для угла 2*pi
             double theta = 2 * M_PI * j / slices;
             points.push_back(Point(CloseToZero(center.x() + radius * sin(phi) * cos(theta)),
                                    CloseToZero(center.y() + radius * sin(phi) * sin(theta)),
@@ -79,26 +77,32 @@ CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &c
     // Генерация треугольников
     // Соединяем верхний полюс с первым рядом
     for (int j = 0; j < slices; ++j) {
-        triangles.push_back({0, j + 1, j + 2});
+        int next = (j + 1) % slices; // Замыкаем первый ряд
+        triangles.push_back({0, j + 1, next + 1});
     }
 
     // Соединяем между слоями
     for (int i = 0; i < stacks - 2; ++i) {
         for (int j = 0; j < slices; ++j) {
-            int current = 1 + i * (slices + 1) + j;
-            int next = current + slices + 1;
+            int current = 1 + i * slices + j;
+            int next = current + slices;
 
-            triangles.push_back({current, next, current + 1});
-            triangles.push_back({current + 1, next, next + 1});
+            int nextCurrentLayer = (j + 1) % slices + i * slices + 1;
+            int nextNextLayer = (j + 1) % slices + (i + 1) * slices + 1;
+
+            triangles.push_back({current, next, nextCurrentLayer});
+            triangles.push_back({nextCurrentLayer, next, nextNextLayer});
         }
     }
 
     // Соединяем нижний полюс с последним рядом
     int bottomPoleIndex = points.size() - 1;
-    int lastLayerStart = bottomPoleIndex - (slices + 1);
+    int lastLayerStart = bottomPoleIndex - slices;
     for (int j = 0; j < slices; ++j) {
-        triangles.push_back({bottomPoleIndex, lastLayerStart + j + 1, lastLayerStart + j});
+        int next = (j + 1) % slices; // Замыкаем последний ряд
+        triangles.push_back({bottomPoleIndex, lastLayerStart + next, lastLayerStart + j});
     }
 
     return CarcasModel(points, triangles, color);
 }
+

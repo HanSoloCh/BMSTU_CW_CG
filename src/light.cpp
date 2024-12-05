@@ -30,7 +30,7 @@ PointLight::PointLight(double intensity, double x, double y, double z)
     , position_(x, y, z) {}
 
 double PointLight::CalculateIntensityInPoint(const Point &point, const QVector3D &normal) const {
-    QVector3D light_vector = (position_ - point).toVector3D();
+    QVector3D light_vector = position_ - point;
     double intensity = GetIntensity() * QVector3D::dotProduct(light_vector, normal) / (normal.length() * light_vector.length());
     return intensity > 0 ? intensity : 0;
 }

@@ -25,6 +25,8 @@ public:
     double CalculateIntensityInPoint(const Point &point, const QVector3D &normal) const override;
 };
 
+// В работе не используется, можно удалить
+// (DrawVisitor не правильно высчитывает освещенность, если есть такой истчник)
 class PointLight: public AbstractLight {
 public:
     PointLight(double intensity, const Point &position);
