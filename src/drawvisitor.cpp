@@ -195,20 +195,11 @@ int DrawVisitor::calculateIntensity(const Point &point, const QVector3D &normal)
     return intesity * 255;
 }
 
-#include <QDebug>
-
 void DrawVisitor::Visit(const CarcasModel &carcas_model) {
-    int i = 0;
     for (const auto &triangle : carcas_model.GetTriangles()) {
         std::array<Point, 3> points = carcas_model.GetTrianglePoints(triangle);
-        qDebug() << points[0] << points[1] << points[2];
         std::array<QVector3D, 3> normals = carcas_model.GetNormals(triangle);
-        // qDebug() << normals[0] << normals[1] << normals[2] << "\n";
-        if (i == 10)
-            Visit(Triangle(points, Qt::red), normals);
-        else
-            Visit(Triangle(points, carcas_model.GetColor()), normals);
-        ++i;
+        Visit(Triangle(points, carcas_model.GetColor()), normals);
     }
 }
 

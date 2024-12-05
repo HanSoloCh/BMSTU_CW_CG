@@ -13,7 +13,7 @@ Canvas::Canvas(QWidget *parent)
     : QWidget(parent) {
     AddLight(std::make_shared<DirectionLight>(1, QVector3D(1, 1, -1)));
 
-    AddModel(std::make_shared<CarcasModel>(GenerateShape(2, 10, 10, Qt::green, Point(0, 0, 8))));
+    AddModel(std::make_shared<CarcasModel>(GenerateShape(2, 100, 100, Qt::green, Point(0, 0, 8))));
 }
 
 void Canvas::AddModel(const std::shared_ptr<AbstractModel> carcas_model) {
