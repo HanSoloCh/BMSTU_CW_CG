@@ -9,8 +9,8 @@
 
 class Facade {
 public:
-    Facade(std::unique_ptr<Canvas> canvas);
-    Facade(Canvas *canvas);
+    Facade();
+    ~Facade() = default;
 
     void AddObject(std::shared_ptr<AbstractModel> object);
     void AddLight(std::shared_ptr<AbstractLight> light);
