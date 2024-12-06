@@ -3,17 +3,12 @@
 #include <QPainter>
 #include <memory>
 
-#include "carcasmodel.h"
 #include "strategy.h"
 #include "drawvisitor.h"
 
 
 Canvas::Canvas(QWidget *parent)
-    : QWidget(parent) {
-    AddLight(std::make_shared<DirectionLight>(1, QVector3D(1, 1, -1)));
-
-    AddModel(std::make_shared<CarcasModel>(GenerateShape(2, 3, 3, Qt::green, Point(0, 0, 8))));
-}
+    : QWidget(parent) {}
 
 void Canvas::AddModel(const std::shared_ptr<AbstractModel> carcas_model) {
     scene_objects_.push_back(carcas_model);
@@ -32,6 +27,7 @@ void Canvas::Transform(const QMatrix4x4 &transform_matrix) {
 
 void Canvas::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
+    qDebug() << "JUI";
     QPainter painter(this);
 
     AbstractStrategyProjection *strategy = new PerspectivStrategyProjection();

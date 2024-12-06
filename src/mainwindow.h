@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-#include "canvas.h"
+#include "facade.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,6 +20,6 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    Canvas *canvas;
+    Facade *canvas_facade_;
 };
 #endif // MAINWINDOW_H

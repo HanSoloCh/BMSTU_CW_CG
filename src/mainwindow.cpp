@@ -10,14 +10,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    Facade canvas_facade;
+    canvas_facade_ = new Facade();
 
     ui->canvasLayout->setLayout(new QVBoxLayout);
     ui->canvasLayout->layout()->addWidget(canvas_facade.GetCanvas());
-
-    // canvas = new Canvas(1, 1, 1, this);
-    // ui->canvasLayout->setLayout(new QVBoxLayout);
-    // ui->canvasLayout->layout()->addWidget(canvas);
 }
 
 MainWindow::~MainWindow()

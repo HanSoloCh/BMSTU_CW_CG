@@ -11,8 +11,7 @@
 #include "light.h"
 
 
-class Canvas : public QWidget
-{
+class Canvas : public QWidget {
     Q_OBJECT
 public:
     explicit Canvas(QWidget *parent = nullptr);

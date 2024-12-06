@@ -6,10 +6,14 @@
 #include "canvas.h"
 #include "abstractmodel.h"
 #include "light.h"
+#include "carcasmodel.h"
 
 
 Facade::Facade()
-    : canvas_(std::make_unique<Canvas>()) {}
+    : canvas_(std::make_unique<Canvas>()) {
+    AddLight(std::make_shared<DirectionLight>(1, QVector3D(1, 1, -1)));
+    AddObject(std::make_shared<CarcasModel>(GenerateShape(2, 3, 3, Qt::green, Point(0, 0, 8))));
+}
 
 void Facade::AddObject(std::shared_ptr<AbstractModel> object) {
     canvas_->AddModel(object);
