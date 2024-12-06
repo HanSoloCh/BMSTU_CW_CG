@@ -7,8 +7,7 @@
 #include "abstractmodel.h"
 #include "light.h"
 
-class Facade
-{
+class Facade {
 public:
     Facade(std::unique_ptr<Canvas> canvas);
     Facade(Canvas *canvas);

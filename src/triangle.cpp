@@ -22,6 +22,12 @@ void Triangle::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
 }
 
+void Triangle::Transform(const QMatrix4x4 &transform_matrix) {
+    for (auto &point : points_) {
+        point.Transform(transform_matrix);
+    }
+}
+
 double Triangle::GetMaxX() const noexcept {
     return std::max({points_[0].x(), points_[1].x(), points_[2].x()});
 }

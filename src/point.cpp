@@ -21,9 +21,11 @@ void Point::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
 }
 
-// void Point::Transform(const QMatrix4x4 &trnsform_matrix) {
-//     QVector3D::operator=(trnsform_matrix * *this);
-// }
+void Point::Transform(const QMatrix4x4 &transform_matrix) {
+    // qDebug() << *this;
+    QVector3D::operator=(transform_matrix.map(*this));
+    // qDebug() << *this << "\n";
+}
 
 bool Point::operator==(const Point &p) const noexcept {
     double epsilon = std::numeric_limits<double>::epsilon();

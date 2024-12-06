@@ -47,7 +47,6 @@ DirectionLight::DirectionLight(double intensity, double x, double y, double z)
     direction_ = direction_.normalized();
 }
 
-#include <QDebug>
 double DirectionLight::CalculateIntensityInPoint(const Point &point, const QVector3D &normal) const {
     Q_UNUSED(point);
     double intensity = GetIntensity() * QVector3D::dotProduct(direction_, normal) / (normal.length());

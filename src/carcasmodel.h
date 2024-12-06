@@ -20,7 +20,7 @@ public:
 
     void Accept(BaseDrawVisitor &visitor) const override;
 
-    // void Transform(const QMatrix4x4 &trnsform_matrix) override;
+    void Transform(const QMatrix4x4 &transform_matrix) override;
 private:
     QVector<Point> points_; // Вершины
     QVector<std::array<int, 3>> triangles_; // Индексы вершин

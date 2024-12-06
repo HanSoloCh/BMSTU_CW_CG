@@ -51,14 +51,18 @@ void CarcasModel::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
 }
 
-double eps = 1e-9;
+void CarcasModel::Transform(const QMatrix4x4 &transform_matrix) {
+    for (auto &point : points_) {
+        point.Transform(transform_matrix);
+    }
+}
 
 CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &color, const Point &center) {
     QVector<Point> points;
     QVector<std::array<int, 3>> triangles;
 
     auto CloseToZero = [](double num) {
-        return std::abs(num) < eps ? 0 : num;
+        return std::abs(num) < 1e-9 ? 0 : num;
     };
 
     // Генерация точек

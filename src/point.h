@@ -22,7 +22,7 @@ public:
 
     void Accept(BaseDrawVisitor &visitor) const override;
 
-    // void Transform(const QMatrix4x4 &trnsform_matrix) override;
+    void Transform(const QMatrix4x4 &transform_matrix) override;
 
     bool operator==(const Point &p) const noexcept;
 };
