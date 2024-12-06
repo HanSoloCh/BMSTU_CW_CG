@@ -1,15 +1,15 @@
 #include "facade.h"
 
-#include <memory.h>
 #include <QMatrix4x4>
+#include <memory>
 
 #include "canvas.h"
 #include "abstractmodel.h"
 #include "light.h"
 
 
-Facade::Facade(Canvas *canvas)
-    : canvas_(canvas) {}
+Facade::Facade()
+    : canvas_(std::make_unique<Canvas>()) {}
 
 void Facade::AddObject(std::shared_ptr<AbstractModel> object) {
     canvas_->AddModel(object);
