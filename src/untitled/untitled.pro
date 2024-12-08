@@ -9,37 +9,15 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    abstractmodel.cpp \
+    BezierCurve.cpp \
     canvas.cpp \
-    carcasmodel.cpp \
-    curve.cpp \
-    curvecanvas.cpp \
-    drawvisitor.cpp \
-    facade.cpp \
-    light.cpp \
     main.cpp \
-    point.cpp \
-    solutionviewer.cpp \
-    strategy.cpp \
-    triangle.cpp \
     mainwindow.cpp
 
 HEADERS += \
-    abstractmodel.h \
+    BezierCurve.h \
     canvas.h \
-    carcasmodel.h \
-    curve.h \
-    curvecanvas.h \
-    drawvisitor.h \
-    facade.h \
-    light.h \
-    point.h \
-    solutionviewer.h \
-    strategy.h \
-    triangle.h \
     mainwindow.h
-
-FORMS +=
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

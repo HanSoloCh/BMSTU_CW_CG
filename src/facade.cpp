@@ -6,13 +6,12 @@
 #include "canvas.h"
 #include "abstractmodel.h"
 #include "light.h"
-#include "carcasmodel.h"
 
 
 Facade::Facade()
     : canvas_(std::make_unique<Canvas>()) {
-    AddLight(std::make_shared<DirectionLight>(1, QVector3D(1, 1, -1)));
-    AddObject(std::make_shared<CarcasModel>(GenerateShape(2, 3, 3, Qt::green, Point(0, 0, 8))));
+    AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, 1)));
+    AddLight(std::make_shared<AmbientLight>(0.25));
 }
 
 void Facade::AddObject(std::shared_ptr<AbstractModel> object) {
@@ -28,6 +27,17 @@ void Facade::AddLight(std::shared_ptr<AbstractLight> light) {
 void Facade::Move(double x, double y, double z) {
     QMatrix4x4 translation_matrix;
     translation_matrix.translate(x, y, z);
+    canvas_->Transform(translation_matrix);
+    canvas_->update();
+}
+
+void Facade::Rotate(double x, double y, double z) {
+    QMatrix4x4 rotation_matrix;
+    rotation_matrix.rotate(x, 1, 0, 0);
+    rotation_matrix.rotate(y, 0, 1, 0);
+    rotation_matrix.rotate(z, 0, 0, 1);
+    canvas_->Transform(rotation_matrix);
+    canvas_->update();
 }
 
 

@@ -110,3 +110,94 @@ CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &c
     return CarcasModel(points, triangles, color);
 }
 
+
+CarcasModel GenerateCarcasModelFromCurve(const QVector<QPointF> &curve,
+                                         const axis_t rotation_axis,
+                                         int segments,
+                                         const QColor &color) {
+    QVector<Point> points;
+    QVector<std::array<int, 3>> triangles;
+
+    auto CloseToZero = [](double num) {
+        return std::abs(num) < 1e-9 ? 0 : num;
+    };
+
+    double angleStep = 2 * M_PI / segments;
+
+    for (const auto &point : curve) {
+        for (int i = 0; i <= segments; ++i) {
+            double angle = i * angleStep;
+            double x = 0.0, y = 0.0, z = 0.0;
+            if (rotation_axis == Ox) {
+                y = point.x();
+                x = point.y();
+                z = 0;
+            } else if (rotation_axis == Oy) {
+                x = point.x();
+                y = point.y();
+                z = 0;
+            } else if (rotation_axis == Oz) {
+                y = point.x();
+                z = point.y();
+                x = 0;
+            }
+            points.append(Point(CloseToZero(x),
+                                CloseToZero(y * cos(angle) - z * sin(angle)),
+                                CloseToZero(y * sin(angle) + z * cos(angle))
+                                )
+                          );
+
+        }
+    }
+
+    int curvePointCount = curve.size();
+    for (int j = 0; j < curvePointCount - 1; ++j) {
+        int baseIndex = j * (segments + 1);
+        int nextBaseIndex = baseIndex + (segments + 1);
+
+        for (int i = 0; i < segments; ++i) {
+            int current = baseIndex + i;
+            int next = baseIndex + i + 1;
+            int nextLayerCurrent = nextBaseIndex + i;
+            int nextLayerNext = nextBaseIndex + i + 1;
+
+            triangles.push_back({current, nextLayerCurrent, next});
+            triangles.push_back({next, nextLayerCurrent, nextLayerNext});
+        }
+    }
+
+    // // Верхняя крышка
+    // int topCenterIndex = points.size();
+    // Point topCenter;
+    // if (rotationAxis == "OX") {
+    //     topCenter = Point(curve.first().x(), 0.0, 0.0);
+    // } else if (rotationAxis == "OY") {
+    //     topCenter = Point(0.0, curve.first().y(), 0.0);
+    // } else {
+    //     topCenter = Point(0.0, 0.0, 0.0);
+    // }
+    // points.append(topCenter);
+
+    // for (int i = 0; i < segments; ++i) {
+    //     triangles.push_back({i, (i + 1) % (segments + 1), topCenterIndex});
+    // }
+
+    // // Нижняя крышка
+    // int bottomCenterIndex = points.size();
+    // Point bottomCenter;
+    // if (rotationAxis == "OX") {
+    //     bottomCenter = Point(curve.last().x(), 0.0, 0.0);
+    // } else if (rotationAxis == "OY") {
+    //     bottomCenter = Point(0.0, curve.last().y(), 0.0);
+    // } else {
+    //     bottomCenter = Point(0.0, 0.0, 0.0);
+    // }
+    // points.append(bottomCenter);
+
+    // int baseIndex = (curvePointCount - 1) * (segments + 1);
+    // for (int i = 0; i < segments; ++i) {
+    //     triangles.push_back({baseIndex + i, bottomCenterIndex, baseIndex + (i + 1) % (segments + 1)});
+    // }
+
+    return CarcasModel(points, triangles, color);
+}

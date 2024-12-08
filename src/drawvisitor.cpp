@@ -15,7 +15,7 @@ DrawVisitor::DrawVisitor(QPainter *painter,
                          QVector<std::shared_ptr<AbstractLight> > light)
     : BaseDrawVisitor(painter)
     , canvas_size_(canvas_size)
-    , z_buffer_(canvas_size_.height(), QVector<double>(canvas_size_.width(), 0.0))
+    , z_buffer_(canvas_size_.height(), QVector<double>(canvas_size_.width(), std::numeric_limits<double>::infinity()))
     , projection_(projection)
     , light_(light) {}
 
@@ -85,11 +85,6 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts) {
     int bbox_min_y = std::min({pts[0].y(), pts[1].y(), pts[2].y()});
     int bbox_max_x = std::max({pts[0].x(), pts[1].x(), pts[2].x()});
     int bbox_max_y = std::max({pts[0].y(), pts[1].y(), pts[2].y()});
-
-    bbox_min_x = std::max(bbox_min_x, 0);
-    bbox_min_y = std::max(bbox_min_y, 0);
-    bbox_max_x = std::min(bbox_max_x, static_cast<int>(z_buffer_.size()) - 1);
-    bbox_max_y = std::min(bbox_max_y, static_cast<int>(z_buffer_[0].size()) - 1);
 
     for (int x = bbox_min_x; x <= bbox_max_x; ++x) {
         for (int y = bbox_min_y; y <= bbox_max_y; ++y) {
@@ -170,9 +165,9 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts, const std::array
             if (alpha >= 0 && beta >= 0 && gamma >= 0) {
                 // Интерполируем z-координату
                 double z = alpha * pts[0].z() + beta * pts[1].z() + gamma * pts[2].z();
-                z = 1 / z;
-                // Проверяем и обновляем z-буфер
-                if (z > z_buffer_[x][y]) {
+                // z = 1 / z;
+                // // Проверяем и обновляем z-буфер
+                if (z < z_buffer_[x][y]) {
                     z_buffer_[x][y] = z;
 
                     QVector3D normal_in_point = alpha * normals[0] + beta * normals[1] + gamma * normals[2];

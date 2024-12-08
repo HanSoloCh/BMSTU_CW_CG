@@ -8,7 +8,9 @@
 
 
 Canvas::Canvas(QWidget *parent)
-    : QWidget(parent) {}
+    : QWidget(parent) {
+    setFixedSize(1000, 1000);
+}
 
 void Canvas::AddModel(const std::shared_ptr<AbstractModel> carcas_model) {
     scene_objects_.push_back(carcas_model);
@@ -30,7 +32,7 @@ void Canvas::paintEvent(QPaintEvent *event) {
     qDebug() << "JUI";
     QPainter painter(this);
 
-    AbstractStrategyProjection *strategy = new PerspectivStrategyProjection();
+    AbstractStrategyProjection *strategy = new NewStrategy();
 
     DrawVisitor visitor(&painter, size(), strategy, light_);
 

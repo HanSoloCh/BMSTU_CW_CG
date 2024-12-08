@@ -17,14 +17,16 @@ Point::Point(QPointF p, double z, const QColor &color)
     : AbstractModel(color)
     , QVector3D(p.x(), p.y(), z) {}
 
+Point::Point(const QVector3D &vector, const QColor &color)
+    : AbstractModel(color)
+    , QVector3D(vector) {}
+
 void Point::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
 }
 
 void Point::Transform(const QMatrix4x4 &transform_matrix) {
-    // qDebug() << *this;
     QVector3D::operator=(transform_matrix.map(*this));
-    // qDebug() << *this << "\n";
 }
 
 bool Point::operator==(const Point &p) const noexcept {

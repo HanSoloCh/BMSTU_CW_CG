@@ -25,5 +25,4 @@ private:
 };
 
 
-
 #endif // FACADE_H

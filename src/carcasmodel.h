@@ -7,6 +7,13 @@
 #include "abstractmodel.h"
 #include "point.h"
 
+
+typedef enum {
+    Ox = 1,
+    Oy = 2,
+    Oz = 3,
+} axis_t;
+
 class CarcasModel : public AbstractModel {
 public:
     explicit CarcasModel(const QVector<Point> &points,
@@ -31,5 +38,8 @@ private:
 
 
 CarcasModel GenerateShape(double radius, int slices, int stacks, const QColor &color, const Point &center);
-
+CarcasModel GenerateCarcasModelFromCurve(const QVector<QPointF> &curve,
+                                         const axis_t rotation_axis,
+                                         int segments,
+                                         const QColor &color = Qt::gray);
 #endif // CARCASMODEL_H
