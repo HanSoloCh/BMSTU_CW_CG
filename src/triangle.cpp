@@ -60,12 +60,9 @@ Point Triangle::operator[](int i) const noexcept {
     return points_[i];
 }
 
-#include <QDebug>
 QVector3D Triangle::CalculateNormal() const noexcept {
-    // qDebug() << (*this)[0] << (*this)[1] << (*this)[2];
     QVector3D p10 = (*this)[1] - (*this)[0];
     QVector3D p20 = (*this)[2] - (*this)[0];
-    // qDebug() << p10 << p20 << "\n";
     return QVector3D::normal(p10, p20);
 }
 

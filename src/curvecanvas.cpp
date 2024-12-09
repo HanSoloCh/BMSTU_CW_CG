@@ -31,11 +31,11 @@ void CurveCanvas::paintEvent(QPaintEvent *event) {
     // Рисуем ось вращения
     painter.setPen(Qt::gray);
     painter.drawLine(width() / 2, 0, width() / 2, height());
+    painter.drawLine(0, height() / 2, width(), height() / 2);
 
     // Рисуем заданные точки
     painter.setPen(Qt::blue);
     for (const auto &point : mainPoints) {
-        // qDebug() << point;
         painter.drawEllipse(point, 5, 5);
     }
 

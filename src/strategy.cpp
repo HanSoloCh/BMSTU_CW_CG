@@ -34,7 +34,7 @@ Point NewStrategy::ProjectPoint(const Point &point, const QSize &canvas_size) co
     // double y = (-point.y() + canvas_size.height() / 2)/ (1 - point.z() / 10);
 
     return Point(point.x() + canvas_size.width() / 2,
-                 point.y() + canvas_size.height() / 2,
+                 -point.y() + canvas_size.height() / 2,
                  point.z());
 //     double perspective = 1000;
 //     double scale = perspective / (perspective + point.z());

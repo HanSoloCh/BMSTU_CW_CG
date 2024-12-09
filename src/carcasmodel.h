@@ -11,7 +11,6 @@
 typedef enum {
     Ox = 1,
     Oy = 2,
-    Oz = 3,
 } axis_t;
 
 class CarcasModel : public AbstractModel {
@@ -34,6 +33,7 @@ private:
 
     QHash<Point, QVector3D> normals_;
     QVector<QVector3D> points_normals_;
+    QVector<QVector2D> uv_coords_;
 };
 
 

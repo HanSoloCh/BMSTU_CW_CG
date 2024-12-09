@@ -10,7 +10,7 @@
 
 Facade::Facade()
     : canvas_(std::make_unique<Canvas>()) {
-    AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, 1)));
+    AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, -1)));
     AddLight(std::make_shared<AmbientLight>(0.25));
 }
 

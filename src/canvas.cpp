@@ -29,7 +29,6 @@ void Canvas::Transform(const QMatrix4x4 &transform_matrix) {
 
 void Canvas::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
-    qDebug() << "JUI";
     QPainter painter(this);
 
     AbstractStrategyProjection *strategy = new NewStrategy();

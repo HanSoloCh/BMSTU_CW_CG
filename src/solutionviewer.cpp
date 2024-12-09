@@ -20,6 +20,9 @@ SolutionViewer::SolutionViewer(QWidget *parent)
 
 void SolutionViewer::SetModel(const QVector<QPointF> &curve, const axis_t &axis, int slices, const QColor &color) {
     canvas_facade_->AddObject(std::make_shared<CarcasModel>(GenerateCarcasModelFromCurve(curve, axis, slices, color)));
+    // По-хорошему сделать так, чтобы вращение было в самом коде генерации, но...
+    if (axis == Oy)
+        canvas_facade_->Rotate(0, 0, 90);
 }
 
 void SolutionViewer::keyPressEventWithoutCtrl(QKeyEvent *event) {
@@ -50,16 +53,16 @@ void SolutionViewer::keyPressEventWithCtrl(QKeyEvent *event) {
         canvas_facade_->Rotate(0, -1, 0);
         break;
     case Qt::Key_S:
-        canvas_facade_->Rotate(1, 0, 0);
-        break;
-    case Qt::Key_W:
         canvas_facade_->Rotate(-1, 0, 0);
         break;
+    case Qt::Key_W:
+        canvas_facade_->Rotate(1, 0, 0);
+        break;
     case Qt::Key_E:
-        canvas_facade_->Rotate(0, 0, 1);
+        canvas_facade_->Rotate(0, 0, -1);
         break;
     case Qt::Key_Q:
-        canvas_facade_->Rotate(0, 0, -1);
+        canvas_facade_->Rotate(0, 0, 1);
         break;
     }
 

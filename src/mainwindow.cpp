@@ -53,20 +53,17 @@ void MainWindow::AddAxisButtons(QWidget *central_widget, QVBoxLayout *layout) {
     radio_button_group_ = new QButtonGroup(central_widget);
     QRadioButton *radio_button_ox = new QRadioButton("Ось OX", central_widget);
     QRadioButton *radio_button_oy = new QRadioButton("Ось OY", central_widget);
-    QRadioButton *radio_button_oz = new QRadioButton("Ось OZ", central_widget);
 
     radio_button_ox->setChecked(true);
 
     // Создаем группу радиокнопок
     radio_button_group_->addButton(radio_button_ox, 1);
     radio_button_group_->addButton(radio_button_oy, 2);
-    radio_button_group_->addButton(radio_button_oz, 3);
 
     QHBoxLayout *radio_box_layout = new QHBoxLayout();
 
     radio_box_layout->addWidget(radio_button_ox);
     radio_box_layout->addWidget(radio_button_oy);
-    radio_box_layout->addWidget(radio_button_oz);
 
     layout->addLayout(radio_box_layout);
 }
@@ -82,7 +79,8 @@ void MainWindow::onGenerateButtonClicked() {
     // Показать окно тела вращения
     SolutionViewer *solution_viewer = new SolutionViewer(this);
     for (auto &point : curvePoints) {
-        point -= QPointF(300, 300);
+        point -= QPointF(curve_canvas_->width() / 2, curve_canvas_->height() / 2);
+        point.setY(-point.y());
     }
 
     solution_viewer->SetModel(curvePoints, static_cast<axis_t>(radio_button_group_->checkedId()), 30, model_color_);
