@@ -182,8 +182,8 @@ void DrawMappedVisitor::DrawMappedTriangle(const std::array<Point, 3> &pts, cons
                 if (UpdateZBuffer(x, y, z)) {
                     QVector3D normal_in_point = InterpolateValue<QVector3D>({normals[0], normals[1], normals[2]}, barycentric_coords);
                     QVector2D uv_point = InterpolateValue<QVector2D>({uv_coords[0], uv_coords[1], uv_coords[2]}, barycentric_coords);
-                    // normal_in_point += GetNormalInPoint(uv_point);
-                    int intesity = calculateIntensity(Point(x, y), GetNormalInPoint(uv_point));
+                    normal_in_point += GetNormalInPoint(uv_point);
+                    int intesity = calculateIntensity(Point(x, y), normal_in_point);
 
                     SetColor(IntensityColor(color, intesity));
                     painter_->drawPoint(x, y);
