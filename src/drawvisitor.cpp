@@ -51,13 +51,6 @@ QColor IntensityColor(const QColor &color, int intensity) {
     return newColor;
 }
 
-
-int calcInd(const Triangle &triangle) {
-    QVector3D light(0, 0, -1);
-    double ind = QVector3D::dotProduct(triangle.CalculateNormal(), light);
-    return ind * 255;
-}
-
 void DrawVisitor::Visit(const Triangle &triangle) {
     std::array<Point, 3> points = triangle.GetPoints();
 
@@ -183,7 +176,7 @@ void DrawMappedVisitor::DrawMappedTriangle(const std::array<Point, 3> &pts, cons
                     QVector3D normal_in_point = InterpolateValue<QVector3D>({normals[0], normals[1], normals[2]}, barycentric_coords);
                     QVector2D uv_point = InterpolateValue<QVector2D>({uv_coords[0], uv_coords[1], uv_coords[2]}, barycentric_coords);
                     normal_in_point += GetNormalInPoint(uv_point);
-                    int intesity = calculateIntensity(Point(x, y), normal_in_point);
+                    int intesity = calculateIntensity(Point(x, y), normal_in_point.normalized());
 
                     SetColor(IntensityColor(color, intesity));
                     painter_->drawPoint(x, y);
