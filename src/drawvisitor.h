@@ -58,7 +58,7 @@ protected:
 
 
     void DrawPoint(Point &point);
-    void DrawTriangle(const std::array<Point, 3> &points);
+    void DrawTriangle(Triangle &pts);
     void DrawTriangle(const std::array<Point, 3> &points,
                       const std::array<QVector3D, 3> &normals,
                       const QColor &color,

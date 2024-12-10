@@ -60,32 +60,31 @@ int calcInd(const Triangle &triangle) {
 }
 
 void DrawVisitor::Visit(const Triangle &triangle) {
-    int ind = calcInd(triangle);
-
     std::array<Point, 3> points = triangle.GetPoints();
 
     for (auto &point : points) {
         point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
     }
 
-    // Сортировка по y
-    std::sort(points.begin(), points.end(), [](const Point &p1, const Point &p2) {
-        return p1.y() < p2.y();
-    });
+    Triangle tmp_trinalge(points, triangle.GetNormals(), triangle.GetColor());
 
-    SetColor(IntensityColor(triangle.GetColor(), ind));
-    DrawTriangle({points[0], points[1], points[2]});
-    ResetColor();
+    DrawTriangle(tmp_trinalge);
 }
 
 
 
-void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts) {
-    // Определение границ треугольника
+void DrawVisitor::DrawTriangle(Triangle &pts) {
     int bbox_min_x = std::min({pts[0].x(), pts[1].x(), pts[2].x()});
     int bbox_min_y = std::min({pts[0].y(), pts[1].y(), pts[2].y()});
     int bbox_max_x = std::max({pts[0].x(), pts[1].x(), pts[2].x()});
     int bbox_max_y = std::max({pts[0].y(), pts[1].y(), pts[2].y()});
+
+    bbox_min_x = std::max(bbox_min_x, 0);
+    bbox_min_y = std::max(bbox_min_y, 0);
+    bbox_max_x = std::min(bbox_max_x, static_cast<int>(z_buffer_.size()) - 1);
+    bbox_max_y = std::min(bbox_max_y, static_cast<int>(z_buffer_[0].size()) - 1);
+
+    std::array<QVector3D, 3> normals = pts.GetNormals();
 
     for (int x = bbox_min_x; x <= bbox_max_x; ++x) {
         for (int y = bbox_min_y; y <= bbox_max_y; ++y) {
@@ -99,34 +98,23 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts) {
             if (alpha >= 0 && beta >= 0 && gamma >= 0) {
                 // Интерполируем z-координату
                 double z = alpha * pts[0].z() + beta * pts[1].z() + gamma * pts[2].z();
-                z = 1 / z;
-                // Проверяем и обновляем z-буфер
-                if (z > z_buffer_[x][y]) {
+                // // Проверяем и обновляем z-буфер
+                if (z < z_buffer_[x][y]) {
                     z_buffer_[x][y] = z;
+
+                    QVector3D normal_in_point = alpha * normals[0] + beta * normals[1] + gamma * normals[2];
+                    // QVector2D uv_point = alpha * uv[0] + beta * uv[1] + gamma * uv[2];
+                    // normal_in_point += getNormalInPoint(uv_point);
+                    int intesity = calculateIntensity(Point(x, y), normal_in_point);
+
+                    SetColor(IntensityColor(pts.GetColor(), intesity));
                     painter_->drawPoint(x, y);
+                    ResetColor();
                 }
             }
         }
     }
-}
 
-void SortPointsAndNormals(std::array<Point, 3> &points, std::array<QVector3D, 3> &normals) {
-    std::array<std::pair<Point, QVector3D>, 3> point_normal_pairs;
-    for (size_t i = 0; i < 3; ++i) {
-        point_normal_pairs[i] = {points[i], normals[i]};
-    }
-
-    // Сортировка пар по y-координате точки
-    std::sort(point_normal_pairs.begin(), point_normal_pairs.end(),
-              [](const std::pair<Point, QVector3D> &p1, const std::pair<Point, QVector3D> &p2) {
-                  return p1.first.y() < p2.first.y();
-              });
-
-    // Разделение пар обратно на точки и нормали
-    for (size_t i = 0; i < 3; ++i) {
-        points[i] = point_normal_pairs[i].first;
-        normals[i] = point_normal_pairs[i].second;
-    }
 }
 
 // Происходит издевательство над паттернами и тасовым
@@ -217,7 +205,7 @@ void DrawVisitor::Visit(const CarcasModel &carcas_model) {
 
         std::array<Point, 3> points = carcas_model.GetTrianglePoints(triangle);
         std::array<QVector3D, 3> normals = carcas_model.GetNormals(triangle);
-        Visit(Triangle(points, carcas_model.GetColor()), normals, carcas_model.GetTriangleUV(triangle));
+        Visit(Triangle(points, normals, carcas_model.GetColor()));
     }
 }
 

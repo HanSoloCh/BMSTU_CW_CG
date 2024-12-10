@@ -5,18 +5,37 @@
 
 Triangle::Triangle(const Point &p0, const Point &p1, const Point &p2, const QColor &color)
     : AbstractModel(color)
-    , points_{p0, p1, p2} {
+    , points_({p0, p1, p2}) {
+    QVector3D normal = CalculateNormal();
+    points_normals_ = {normal, normal, normal};
 }
 
 Triangle::Triangle(const std::array<Point, 3> &points, const QColor &color)
     : AbstractModel(color)
     , points_(points) {
+    QVector3D normal = CalculateNormal();
+    points_normals_ = {normal, normal, normal};
 }
 
 Triangle::Triangle(const Point points[3], const QColor &color)
     : AbstractModel(color)
     , points_({points[0], points[1], points[2]}) {
+    QVector3D normal = CalculateNormal();
+    points_normals_ = {normal, normal, normal};
 }
+
+Triangle::Triangle(const std::array<Point, 3> &points,
+                   const std::array<QVector3D, 3> &points_normals,
+                   const QColor &color)
+    : AbstractModel(color)
+    , points_(points)
+    , points_normals_(points_normals) {}
+
+
+Triangle::Triangle(const Point points[3], const QVector3D points_normals[3], const QColor &color)
+    : AbstractModel(color)
+    , points_({points[0], points[1], points[2]})
+    , points_normals_({points_normals[0], points_normals[1], points_normals[2]}) {}
 
 void Triangle::Accept(BaseDrawVisitor &visitor) const {
     visitor.Visit(*this);
@@ -82,9 +101,5 @@ QVector3D Triangle::CalculateNormal() const noexcept {
 
 std::array<Point, 3> Triangle::GetPoints() const noexcept { return points_; }
 
-void Triangle::SwapVertices() {
-    Point temp = (*this)[1];
-    (*this)[1] = (*this)[2];
-    (*this)[2] = temp;
-}
+std::array<QVector3D, 3> Triangle::GetNormals() const noexcept { return points_normals_; }
 
