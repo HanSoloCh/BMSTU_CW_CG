@@ -50,27 +50,72 @@ public:
     void Visit(const Point &point) override;
     void Visit(const Triangle &triangle) override;
     void Visit(const CarcasModel &carcas_model) override;
-    void Visit(const Triangle &triangle, const std::array<QVector3D, 3> &normals, const std::array<QVector2D, 3> &uv);
 
 protected:
+    struct BarycentricCoords {
+        double alpha;
+        double beta;
+        double gamma;
+    };
 
-    QVector3D getNormalInPoint(const QVector2D &uv);
+    Point ProjectPoint(const Point &point) const;
 
-
-    void DrawPoint(Point &point);
-    void DrawTriangle(Triangle &pts);
-    void DrawTriangle(const std::array<Point, 3> &points,
+    void DrawPoint(const Point &point);
+    void DrawTriangle(const std::array<Point, 3> &pts,
                       const std::array<QVector3D, 3> &normals,
-                      const QColor &color,
-                      const std::array<QVector2D, 3> &uv);
+                      const QColor &color);
+
+
+    std::tuple<int, int, int, int> CalculateBoundingBox(const std::array<Point, 3> &pts) const;
+    bool CalculateBarycentricCoords(const std::array<Point, 3> &pts,
+                                    int x,
+                                    int y,
+                                    BarycentricCoords &barycentric_coords) const;
+    bool IsInsideTriangle(const BarycentricCoords &barycentric_coords) const;
+    bool UpdateZBuffer(int x, int y, double z);
 
     int calculateIntensity(const Point &point, const QVector3D &mormal) const;
+
+    template <typename T>
+    T InterpolateValue(const std::array<T, 3> values,
+                       const BarycentricCoords &barycentric_coords) const;
+
 private:
     QSize canvas_size_;
     QVector<QVector<double>> z_buffer_;
     const AbstractStrategyProjection *projection_;
     QVector<std::shared_ptr<AbstractLight>> light_;
-    QImage normal_map;
 };
+
+template<typename T>
+T DrawVisitor::InterpolateValue(const std::array<T, 3> values,
+                                const BarycentricCoords &barycentric_coords) const {
+    return barycentric_coords.alpha * values[0] +
+           barycentric_coords.beta * values[1] +
+           barycentric_coords.gamma * values[2];
+}
+
+class DrawMappedVisitor : public DrawVisitor {
+public:
+    DrawMappedVisitor(QPainter *painter,
+                      QSize canvas_size,
+                      const AbstractStrategyProjection *projection,
+                      QVector<std::shared_ptr<AbstractLight>> light,
+                      const QImage &normal_map);
+    DrawMappedVisitor(const DrawVisitor &draw_visitor,
+                      const QImage &normal_map);
+    ~DrawMappedVisitor() = default;
+
+    void Visit(const CarcasModel &carcas_model) override;
+protected:
+    void DrawMappedTriangle(const std::array<Point, 3> &pts,
+                            const std::array<QVector3D, 3> &normals,
+                            const std::array<QVector2D, 3> &uv_coords,
+                            const QColor &color);
+    QVector3D GetNormalInPoint(const QVector2D &uv);
+private:
+    QImage normal_map_;
+};
+
 
 #endif // DRAWVISITOR_H

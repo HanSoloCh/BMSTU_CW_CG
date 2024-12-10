@@ -11,7 +11,13 @@
 Facade::Facade()
     : canvas_(std::make_unique<Canvas>()) {
     AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, -1)));
-    // AddLight(std::make_shared<AmbientLight>(0.5));
+    AddLight(std::make_shared<AmbientLight>(0));
+}
+
+Facade::Facade(const QImage &normal_map)
+    : canvas_(std::make_unique<Canvas>(normal_map)) {
+    AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, -1)));
+    AddLight(std::make_shared<AmbientLight>(0.2));
 }
 
 void Facade::AddObject(std::shared_ptr<AbstractModel> object) {

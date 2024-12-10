@@ -11,15 +11,16 @@ class SolutionViewer : public QMainWindow {
     Q_OBJECT
 public:
     explicit SolutionViewer(QWidget *parent = nullptr);
+    explicit SolutionViewer(const QImage &normal_map, QWidget *parent = nullptr);
 
-    void SetModel(const QVector<QPointF> &curve, const axis_t &axis, int slices, const QColor &color = Qt::gray);
-
+    void SetModel(const QVector<QPointF> &curve, const axis_t &axis, int slices = 30, const QColor &color = Qt::gray);
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     void keyPressEventWithCtrl(QKeyEvent *event);
     void keyPressEventWithoutCtrl(QKeyEvent *event);
 
 private:
+    void SetSentralWidget();
     std::unique_ptr<Facade> canvas_facade_;
 };
 

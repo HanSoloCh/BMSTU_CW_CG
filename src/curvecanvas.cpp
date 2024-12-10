@@ -5,21 +5,31 @@
 
 #include "curve.h"
 
-CurveCanvas::CurveCanvas(QWidget *parent) : QWidget(parent) {
+CurveCanvas::CurveCanvas(QWidget *parent)
+    : QWidget(parent)
+    , color_(Qt::gray) {
     setFixedSize(600, 600);
 }
 
-QVector<QPointF> CurveCanvas::generateCurvePoints() {
-    QVector<QPointF> curvePoints;
-    if (mainPoints.size() < 3) {
-        return curvePoints; // Недостаточно точек для построения кривой
+QVector<QPointF> CurveCanvas::GetCurvePoints(int steps) const {
+    QVector<QPointF> curve_points;
+    if (main_points_.size() < 3) {
+        return curve_points;
     }
 
-    QVector<QPointF> bezierPoints = { mainPoints[0], mainPoints[2], mainPoints[1] }; // Порядок: начало, контрольная точка, конец
-    Curve bezier(bezierPoints, steps);
-    curvePoints = bezier.calculateBezierCurve();
+    // Порядок: начало, контрольная точка, конец
+    QVector<QPointF> bezier_points = { main_points_[0], main_points_[2], main_points_[1] };
+    Curve bezier(bezier_points, steps);
+    return bezier.GetPoints();
+}
 
-    return curvePoints;
+QColor CurveCanvas::GetColor() const noexcept {
+    return color_;
+}
+
+void CurveCanvas::SetColor(const QColor &color) {
+    color_ = color;
+    update();
 }
 
 
@@ -34,35 +44,29 @@ void CurveCanvas::paintEvent(QPaintEvent *event) {
     painter.drawLine(0, height() / 2, width(), height() / 2);
 
     // Рисуем заданные точки
-    painter.setPen(Qt::blue);
-    for (const auto &point : mainPoints) {
+    painter.setPen(color_);
+    for (const auto &point : main_points_) {
         painter.drawEllipse(point, 5, 5);
     }
 
-    // Рисуем кривую (красная линия)
-    if (mainPoints.size() == 3) {
-        painter.setPen(Qt::red);
+    // Рисуем кривую
+    if (main_points_.size() == 3) {
         QPainterPath path;
-        path.moveTo(mainPoints[0]);          // Начальная точка
-        path.quadTo(mainPoints[2], mainPoints[1]); // Кривая Безье
+        path.moveTo(main_points_[0]);
+        path.quadTo(main_points_[2], main_points_[1]);
         painter.drawPath(path);
     }
 }
 
-void CurveCanvas::setGeneratedPoints(const QVector<QPointF> &points) {
-    generatedPoints = points;
-    update();
-}
 
 void CurveCanvas::Clean() {
-    generatedPoints.clear();
-    mainPoints.clear();
+    main_points_.clear();
     update();
 }
 
 void CurveCanvas::mousePressEvent(QMouseEvent *event) {
-    if (mainPoints.size() < 3) {
-        mainPoints.append(event->pos());
+    if (main_points_.size() < 3) {
+        main_points_.append(event->pos());
         update();
     }
 }

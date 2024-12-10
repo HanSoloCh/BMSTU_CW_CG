@@ -7,7 +7,7 @@ AbstractModel::AbstractModel(const QColor &color)
 
 AbstractModel::~AbstractModel() {}
 
-void AbstractModel::Accept(BaseDrawVisitor &visitor) const {
-    visitor.Visit(*this);
+void AbstractModel::Accept(BaseDrawVisitor *visitor) const {
+    visitor->Visit(*this);
 }
 

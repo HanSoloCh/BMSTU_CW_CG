@@ -31,7 +31,7 @@ public:
     std::array<Point, 3> GetPoints() const noexcept;
     std::array<QVector3D, 3> GetNormals() const noexcept;
 
-    void Accept(BaseDrawVisitor &visitor) const override;
+    void Accept(BaseDrawVisitor *visitor) const override;
 
     void Transform(const QMatrix4x4 &transform_matrix) override;
 

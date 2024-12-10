@@ -10,6 +10,7 @@
 class Facade {
 public:
     Facade();
+    Facade(const QImage &normal_map);
     ~Facade() = default;
 
     void AddObject(std::shared_ptr<AbstractModel> object);

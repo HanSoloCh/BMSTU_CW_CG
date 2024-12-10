@@ -8,11 +8,20 @@
 #include "facade.h"
 
 SolutionViewer::SolutionViewer(QWidget *parent)
-    : QMainWindow(parent) {
+    : QMainWindow(parent)
+    , canvas_facade_(std::make_unique<Facade>()) {
+    SetSentralWidget();
+}
+
+SolutionViewer::SolutionViewer(const QImage &normal_map, QWidget *parent)
+    : QMainWindow(parent)
+    , canvas_facade_(std::make_unique<Facade>(normal_map)) {
+    SetSentralWidget();
+}
+
+void SolutionViewer::SetSentralWidget() {
     QWidget *central_widget = new QWidget(this);
     setCentralWidget(central_widget);
-
-    canvas_facade_ = std::make_unique<Facade>();
 
     QVBoxLayout *layout = new QVBoxLayout(central_widget);
     layout->addWidget(canvas_facade_->GetCanvas());
