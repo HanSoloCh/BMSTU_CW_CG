@@ -50,13 +50,19 @@ public:
     void Visit(const Point &point) override;
     void Visit(const Triangle &triangle) override;
     void Visit(const CarcasModel &carcas_model) override;
-    void Visit(const Triangle &triangle, const std::array<QVector3D, 3> &normals);
+    void Visit(const Triangle &triangle, const std::array<QVector3D, 3> &normals, const std::array<QVector2D, 3> &uv);
 
-    // static QVector<double> Interpolate(double x0, double y0, double x1, double y1);
 protected:
+
+    QVector3D getNormalInPoint(const QVector2D &uv);
+
+
     void DrawPoint(Point &point);
     void DrawTriangle(const std::array<Point, 3> &points);
-    void DrawTriangle(const std::array<Point, 3> &points, const std::array<QVector3D, 3> &normals, const QColor &color);
+    void DrawTriangle(const std::array<Point, 3> &points,
+                      const std::array<QVector3D, 3> &normals,
+                      const QColor &color,
+                      const std::array<QVector2D, 3> &uv);
 
     int calculateIntensity(const Point &point, const QVector3D &mormal) const;
 private:
@@ -64,6 +70,7 @@ private:
     QVector<QVector<double>> z_buffer_;
     const AbstractStrategyProjection *projection_;
     QVector<std::shared_ptr<AbstractLight>> light_;
+    QImage normal_map;
 };
 
 #endif // DRAWVISITOR_H

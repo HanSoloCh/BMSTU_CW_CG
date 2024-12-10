@@ -17,7 +17,8 @@ DrawVisitor::DrawVisitor(QPainter *painter,
     , canvas_size_(canvas_size)
     , z_buffer_(canvas_size_.height(), QVector<double>(canvas_size_.width(), std::numeric_limits<double>::infinity()))
     , projection_(projection)
-    , light_(light) {}
+    , light_(light)
+    , normal_map("wood.png") {}
 
 
 void DrawVisitor::Visit(const Point &point) {
@@ -129,7 +130,8 @@ void SortPointsAndNormals(std::array<Point, 3> &points, std::array<QVector3D, 3>
 }
 
 // Происходит издевательство над паттернами и тасовым
-void DrawVisitor::Visit(const Triangle &triangle, const std::array<QVector3D, 3> &normals) {
+void DrawVisitor::Visit(const Triangle &triangle, const std::array<QVector3D, 3> &normals,
+const std::array<QVector2D, 3> &uv) {
     std::array<Point, 3> points = triangle.GetPoints();    
 
     for (auto &point : points) {
@@ -138,11 +140,28 @@ void DrawVisitor::Visit(const Triangle &triangle, const std::array<QVector3D, 3>
 
     DrawTriangle({points[0], points[1], points[2]},
                  normals,
-                 triangle.GetColor());
+                 triangle.GetColor(),
+                 uv);
 }
 
 
-void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts, const std::array<QVector3D, 3> &normals, const QColor &color) {
+QVector3D DrawVisitor::getNormalInPoint(const QVector2D &uv) {
+    int x = static_cast<int>(uv.x() * normal_map.width()) % normal_map.width();
+    int y = static_cast<int>(uv.y() * normal_map.height()) % normal_map.height();
+
+    QColor color = normal_map.pixelColor(x, y);
+    QVector3D normal;
+    normal.setX((color.red() / 255.0) * 2.0 - 1.0);
+    normal.setY((color.green() / 255.0) * 2.0 - 1.0);
+    normal.setZ(-((color.blue() / 255.0) * 2.0 - 1.0));
+
+    return normal.normalized();
+}
+
+void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts,
+                               const std::array<QVector3D, 3> &normals,
+                               const QColor &color,
+                               const std::array<QVector2D, 3> &uv) {
     int bbox_min_x = std::min({pts[0].x(), pts[1].x(), pts[2].x()});
     int bbox_min_y = std::min({pts[0].y(), pts[1].y(), pts[2].y()});
     int bbox_max_x = std::max({pts[0].x(), pts[1].x(), pts[2].x()});
@@ -171,6 +190,8 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts, const std::array
                     z_buffer_[x][y] = z;
 
                     QVector3D normal_in_point = alpha * normals[0] + beta * normals[1] + gamma * normals[2];
+                    QVector2D uv_point = alpha * uv[0] + beta * uv[1] + gamma * uv[2];
+                    normal_in_point += getNormalInPoint(uv_point);
                     int intesity = calculateIntensity(Point(x, y), normal_in_point);
 
                     SetColor(IntensityColor(color, intesity));
@@ -183,11 +204,11 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts, const std::array
 }
 
 int DrawVisitor::calculateIntensity(const Point &point, const QVector3D &normal) const {
-    double intesity = 0;
+    double intensity = 0;
     for (const auto &light: light_) {
-        intesity += light->CalculateIntensityInPoint(point, normal);
+        intensity += light->CalculateIntensityInPoint(point, normal);
     }
-    return intesity * 255;
+    return intensity * 255;
 }
 
 
@@ -196,7 +217,7 @@ void DrawVisitor::Visit(const CarcasModel &carcas_model) {
 
         std::array<Point, 3> points = carcas_model.GetTrianglePoints(triangle);
         std::array<QVector3D, 3> normals = carcas_model.GetNormals(triangle);
-        Visit(Triangle(points, carcas_model.GetColor()), normals);
+        Visit(Triangle(points, carcas_model.GetColor()), normals, carcas_model.GetTriangleUV(triangle));
     }
 }
 
