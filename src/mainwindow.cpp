@@ -71,10 +71,10 @@ void MainWindow::AddAxisButtons(QWidget *central_widget, QVBoxLayout *layout) {
 
 void MainWindow::onGenerateButtonClicked() {
     QVector<QPointF> curvePoints = curve_canvas_->generateCurvePoints();
-    if (curvePoints.size() < 2) {
-        QMessageBox::warning(this, "Ошибка", "Необходимо задать хотя бы две точки.");
-        return;
-    }
+    // if (curvePoints.size() < 2) {
+    //     QMessageBox::warning(this, "Ошибка", "Необходимо задать хотя бы две точки.");
+    //     return;
+    // }
 
     // Показать окно тела вращения
     SolutionViewer *solution_viewer = new SolutionViewer(this);

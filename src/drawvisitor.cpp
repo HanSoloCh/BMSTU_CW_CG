@@ -32,8 +32,8 @@ void DrawVisitor::Visit(const Point &point) {
 void DrawVisitor::DrawPoint(Point &point) {
     double x = point.x();
     double y = point.y();
-    double z = 1 / point.z();
-    if (z > z_buffer_[x][y]) {
+    double z = point.z();
+    if (z < z_buffer_[x][y]) {
         painter_->drawPoint(x, y);
         z_buffer_[x][y] = z;
     }
@@ -67,11 +67,6 @@ void DrawVisitor::Visit(const Triangle &triangle) {
     for (auto &point : points) {
         point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
     }
-
-    // Сортировка по y
-    std::sort(points.begin(), points.end(), [](const Point &p1, const Point &p2) {
-        return p1.y() < p2.y();
-    });
 
     SetColor(IntensityColor(triangle.GetColor(), ind));
     DrawTriangle({points[0], points[1], points[2]});
@@ -107,25 +102,6 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts) {
                 }
             }
         }
-    }
-}
-
-void SortPointsAndNormals(std::array<Point, 3> &points, std::array<QVector3D, 3> &normals) {
-    std::array<std::pair<Point, QVector3D>, 3> point_normal_pairs;
-    for (size_t i = 0; i < 3; ++i) {
-        point_normal_pairs[i] = {points[i], normals[i]};
-    }
-
-    // Сортировка пар по y-координате точки
-    std::sort(point_normal_pairs.begin(), point_normal_pairs.end(),
-              [](const std::pair<Point, QVector3D> &p1, const std::pair<Point, QVector3D> &p2) {
-                  return p1.first.y() < p2.first.y();
-              });
-
-    // Разделение пар обратно на точки и нормали
-    for (size_t i = 0; i < 3; ++i) {
-        points[i] = point_normal_pairs[i].first;
-        normals[i] = point_normal_pairs[i].second;
     }
 }
 

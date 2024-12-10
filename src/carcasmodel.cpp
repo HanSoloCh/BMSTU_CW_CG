@@ -20,6 +20,7 @@ CarcasModel::CarcasModel(const QVector<Point> &points,
     , triangles_(triangles)
     , points_normals_(points.size()) {
     qDebug() << uv_coords.size() << points.size();
+    qDebug() << uv_coords_;
     QVector<QVector<QVector3D>> points_normals(points.size());
 
     for (const auto &triangle : triangles) {
@@ -125,10 +126,6 @@ CarcasModel GenerateCarcasModelFromCurve(const QVector<QPointF> &curve,
     QVector<Point> points;
     QVector<std::array<int, 3>> triangles;
 
-    auto CloseToZero = [](double num) {
-        return std::abs(num) < 1e-9 ? 0 : num;
-    };
-
     // Шаг 1. Вычисляем длины сегментов кривой и общую длину
     QVector<double> segmentLengths;
     double totalLength = 0.0;
@@ -169,7 +166,7 @@ CarcasModel GenerateCarcasModelFromCurve(const QVector<QPointF> &curve,
             // Координаты вращения
             double rotatedY = y * cos(angle) - z * sin(angle);
             double rotatedZ = y * sin(angle) + z * cos(angle);
-            points.append(Point(CloseToZero(x), CloseToZero(rotatedY), CloseToZero(rotatedZ)));
+            points.append(Point(x, rotatedY, rotatedZ));
 
             // Рассчитываем U как долю угла
             double U = static_cast<double>(i) / segments;

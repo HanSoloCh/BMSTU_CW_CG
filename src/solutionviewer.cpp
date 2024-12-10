@@ -19,7 +19,8 @@ SolutionViewer::SolutionViewer(QWidget *parent)
 }
 
 void SolutionViewer::SetModel(const QVector<QPointF> &curve, const axis_t &axis, int slices, const QColor &color) {
-    canvas_facade_->AddObject(std::make_shared<CarcasModel>(GenerateCarcasModelFromCurve(curve, axis, slices, color)));
+    QVector<QPointF> curve_2 = {QPointF(100, 100), QPointF(150, 150), QPointF(200, 200)};
+    canvas_facade_->AddObject(std::make_shared<CarcasModel>(GenerateCarcasModelFromCurve(curve_2, axis, slices, color)));
     // По-хорошему сделать так, чтобы вращение было в самом коде генерации, но...
     if (axis == Oy)
         canvas_facade_->Rotate(0, 0, 90);
