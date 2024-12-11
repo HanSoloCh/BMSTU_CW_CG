@@ -5,12 +5,14 @@
 #include <QMouseEvent>
 #include <QColor>
 
+#include "carcasmodel.h"
+
 class CurveCanvas : public QWidget {
     Q_OBJECT
 public:
     explicit CurveCanvas(QWidget *parent = nullptr);
 
-    QVector<QPointF> GetCurvePoints(int steps = 50) const;
+    QVector<QPointF> GetCurvePoints(const axis_t axis = Ox, int steps = 50);
     QColor GetColor() const noexcept;
 
 public slots:

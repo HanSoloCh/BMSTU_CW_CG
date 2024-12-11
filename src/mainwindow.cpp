@@ -97,13 +97,18 @@ void MainWindow::AddMaterialsButtons(QWidget *central_widget, QVBoxLayout *layou
 
 void MainWindow::onGenerateButtonClicked() {
     QVector<QPointF> curve_points = curve_canvas_->GetCurvePoints();
-    // if (curve_points.size() < 2) {
-    //     QMessageBox::warning(this, "Ошибка", "Необходимо задать хотя бы две точки.");
-    //     return;
-    // }
+    if (curve_points.size() < 2) {
+        QMessageBox::warning(this, "Ошибка", "Необходимо задать хотя бы две точки.");
+        return;
+    }
 
-    // Показать окно тела вращения
     QString texture_name = GetFileName();
+    QImage texture(texture_name);
+    if (materials_button_group_->checkedId() != 0 && texture.isNull()) {
+        QMessageBox::warning(this, "Ошибка", "Не найден файл " + texture_name + ".");
+        return;
+    }
+    // Показать окно тела вращения
     SolutionViewer *solution_viewer = new SolutionViewer(QImage(texture_name), this);
     for (auto &point : curve_points) {
         point -= QPointF(curve_canvas_->width() / 2, curve_canvas_->height() / 2);
@@ -117,14 +122,12 @@ void MainWindow::onGenerateButtonClicked() {
 QString MainWindow::GetFileName() const {
     switch (materials_button_group_->checkedId()) {
     case 1:
-        return "";
-    case 0:
         return "wood.png";
     case 2:
         return "rock.png";
     case 3:
         return "metal.png";
     default:
-        return "";
+        return ".";
     }
 }

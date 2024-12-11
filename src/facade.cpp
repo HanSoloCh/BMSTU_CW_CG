@@ -20,7 +20,6 @@ Facade::Facade(const QImage &normal_map)
 
 void Facade::AddBaseLight() {
     AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, -1)));
-    AddLight(std::make_shared<AmbientLight>(0.25));
 }
 
 void Facade::AddObject(std::shared_ptr<AbstractModel> object) {

@@ -11,14 +11,25 @@ CurveCanvas::CurveCanvas(QWidget *parent)
     setFixedSize(600, 600);
 }
 
-QVector<QPointF> CurveCanvas::GetCurvePoints(int steps) const {
+QVector<QPointF> CurveCanvas::GetCurvePoints(const axis_t axis, int steps) {
     QVector<QPointF> curve_points;
-    if (main_points_.size() < 3) {
+    if (main_points_.size() < 2) {
         return curve_points;
     }
 
-    // Порядок: начало, контрольная точка, конец
-    QVector<QPointF> bezier_points = { main_points_[0], main_points_[2], main_points_[1] };
+    if (axis == Ox && main_points_[0].x() < main_points_[1].x()) {
+        std::swap(main_points_[0], main_points_[1]);
+    } else if (axis == Oy && main_points_[0].y() < main_points_[1].y()) {
+        std::swap(main_points_[0], main_points_[1]);
+    }
+
+    QVector<QPointF> bezier_points;
+    if (main_points_.size() == 2) {
+        bezier_points = { main_points_[0], main_points_[1] };
+    } else {
+        // Порядок: начало, контрольная точка, конец
+        bezier_points = { main_points_[0], main_points_[2], main_points_[1] };
+    }
     Curve bezier(bezier_points, steps);
     return bezier.GetPoints();
 }
@@ -50,7 +61,9 @@ void CurveCanvas::paintEvent(QPaintEvent *event) {
     }
 
     // Рисуем кривую
-    if (main_points_.size() == 3) {
+    if (main_points_.size() == 2) {
+        painter.drawLine(main_points_[0], main_points_[1]);
+    } else if (main_points_.size() == 3) {
         QPainterPath path;
         path.moveTo(main_points_[0]);
         path.quadTo(main_points_[2], main_points_[1]);

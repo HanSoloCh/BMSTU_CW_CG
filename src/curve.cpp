@@ -2,9 +2,18 @@
 
 
 Curve::Curve(const QVector<QPointF> &main_points, int steps) {
-    for (int step = 0; step <= steps; ++step) {
-        double t = static_cast<double>(step) / steps;
-        points_.append(deCasteljau(main_points, t));
+    if (main_points.size() == 2) {
+        QPointF start = main_points[0];
+        QPointF end = main_points[1];
+        for (int i = 0; i < steps; ++i) {
+            double t = static_cast<double>(i) / steps;
+            points_.append((1 - t) * start + t * end);
+        }
+    } else {
+        for (int step = 0; step <= steps; ++step) {
+            double t = static_cast<double>(step) / steps;
+            points_.append(deCasteljau(main_points, t));
+        }
     }
 }
 
