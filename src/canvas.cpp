@@ -14,7 +14,7 @@ Canvas::Canvas(QWidget *parent)
 Canvas::Canvas(const QImage &normal_map, QWidget *parent)
     : QWidget(parent)
     , normal_map_(normal_map) {
-    setFixedSize(800, 800);
+    setFixedSize(1000, 1000);
 }
 
 void Canvas::AddModel(const std::shared_ptr<AbstractModel> carcas_model) {
