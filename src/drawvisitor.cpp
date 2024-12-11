@@ -153,7 +153,7 @@ void DrawMappedVisitor::Visit(const CarcasModel &carcas_model) {
         std::array<Point, 3> points = carcas_model.GetTrianglePoints(triangle);
         for (auto &point : points) {
             point = ProjectPoint(point);
-            // qDebug() << point;
+            qDebug() << point;
         }
         std::array<QVector3D, 3> normals = carcas_model.GetNormals(triangle);
         std::array<QVector2D, 3> uv_coords = carcas_model.GetTriangleUV(triangle);
