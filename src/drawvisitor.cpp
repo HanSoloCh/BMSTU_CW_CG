@@ -157,7 +157,7 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts,
             double alpha = ((pts[1].y() - pts[2].y()) * (x - pts[2].x()) + (pts[2].x() - pts[1].x()) * (y - pts[2].y())) / denom;
             double beta = ((pts[2].y() - pts[0].y()) * (x - pts[2].x()) + (pts[0].x() - pts[2].x()) * (y - pts[2].y())) / denom;
             double gamma = 1.0 - alpha - beta;
-            qDebug() << alpha << beta << gamma;
+            // qDebug() << alpha << beta << gamma;
             // Проверяем, находится ли точка внутри треугольника
             if (alpha >= 0 && beta >= 0 && gamma >= 0) {
                 i++;
@@ -181,7 +181,7 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts,
             }
         }
     }
-    // qDebug() << i;
+    qDebug() << i;
 }
 
 int DrawVisitor::calculateIntensity(const Point &point, const QVector3D &normal) const {
