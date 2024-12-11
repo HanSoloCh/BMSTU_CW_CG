@@ -7,7 +7,7 @@
 
 class AbstractLight {
 public:
-    AbstractLight(double intensity);
+    explicit AbstractLight(double intensity);
     virtual ~AbstractLight() = 0;
 
     double GetIntensity() const;
@@ -20,7 +20,7 @@ private:
 
 class AmbientLight: public AbstractLight {
 public:
-    AmbientLight(double intensity);
+    explicit AmbientLight(double intensity);
 
     double CalculateIntensityInPoint(const Point &point, const QVector3D &normal) const override;
 };

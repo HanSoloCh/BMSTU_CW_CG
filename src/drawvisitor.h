@@ -76,7 +76,7 @@ protected:
     bool IsInsideTriangle(const BarycentricCoords &barycentric_coords) const;
     bool UpdateZBuffer(int x, int y, double z);
 
-    int CalculateIntensity(const Point &point, const QVector3D &mormal) const;
+    int CalculateIntensity(const Point &point, const QVector3D &normal) const;
 
     template <typename T>
     T InterpolateValue(const std::array<T, 3> values,

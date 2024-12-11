@@ -78,10 +78,6 @@ double Triangle::GetMinZ() const noexcept {
     return std::min({points_[0].z(), points_[1].z(), points_[2].z()});
 }
 
-Point Triangle::operator[](int i) noexcept {
-    return points_[i];
-}
-
 Point Triangle::operator[](int i) const noexcept {
     return points_[i];
 }

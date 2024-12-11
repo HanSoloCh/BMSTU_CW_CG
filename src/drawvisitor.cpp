@@ -54,9 +54,10 @@ QColor IntensityColor(const QColor &color, int intensity) {
 void DrawVisitor::Visit(const Triangle &triangle) {
     std::array<Point, 3> points = triangle.GetPoints();
 
-    for (auto &point : points) {
-        point = projection_->ProjectPoint(point, {canvas_size_.width(), canvas_size_.width()});
-    }
+    std::transform(points.begin(), points.end(), points.begin(),
+                   [&](const Point &p) {
+                       return ProjectPoint(p);
+                   });
     Triangle tmp_triangle(triangle);
     tmp_triangle.SetPoints(points);
     DrawTriangle(tmp_triangle);
@@ -82,7 +83,7 @@ void DrawVisitor::DrawTrianglePixel(const QPoint &point,
                                     const BarycentricCoords &barycentric_coords) {
     std::array<QVector3D, 3> normals = triangle.GetNormals();
     QVector3D normal_in_point = InterpolateValue<QVector3D>({normals[0], normals[1], normals[2]}, barycentric_coords);
-    int intesity = CalculateIntensity(point, normal_in_point);
+    int intesity = CalculateIntensity(Point(point), normal_in_point);
 
     SetColor(IntensityColor(triangle.GetColor(), intesity));
     painter_->drawPoint(point);
@@ -126,9 +127,11 @@ bool DrawVisitor::UpdateZBuffer(int x, int y, double z) {
 
 int DrawVisitor::CalculateIntensity(const Point &point, const QVector3D &normal) const {
     double intensity = 0;
-    for (const auto &light: light_) {
-        intensity += light->CalculateIntensityInPoint(point, normal);
-    }
+    intensity = std::accumulate(light_.begin(), light_.end(), 0.0,
+                                [&](double sum, const std::shared_ptr<AbstractLight> light) {
+                                return sum + light->CalculateIntensityInPoint(point, normal);
+                                });
+
     return intensity * 255;
 }
 
@@ -187,7 +190,7 @@ void DrawMappedVisitor::DrawTrianglePixel(const QPoint &point,
     QVector2D uv_point = InterpolateValue<QVector2D>({uv_in_point[0], uv_in_point[1], uv_in_point[2]}, barycentric_coords);
     normal_in_point += GetNormalInPoint(uv_point);
 
-    int intesity = CalculateIntensity(point, normal_in_point.normalized());
+    int intesity = CalculateIntensity(Point(point), normal_in_point.normalized());
 
     SetColor(IntensityColor(triangle.GetColor(), intesity));
     painter_->drawPoint(point);

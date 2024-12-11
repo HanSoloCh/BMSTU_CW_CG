@@ -12,10 +12,10 @@ class Triangle: public AbstractModel {
 public:
     Triangle(const Point &p0, const Point &p1, const Point &p2, const QColor &color = Qt::gray);
 
-    Triangle(const std::array<Point, 3> &points,
+    explicit Triangle(const std::array<Point, 3> &points,
              const QColor &color = Qt::gray);
 
-    Triangle(const Point points[3],
+    explicit Triangle(const Point points[3],
              const QColor &color = Qt::gray);
 
     Triangle(const std::array<Point, 3> &points,
@@ -51,7 +51,6 @@ public:
     double GetMinY() const noexcept;
     double GetMinZ() const noexcept;
 
-    Point operator[](int i) noexcept;
     Point operator[](int i) const noexcept;
 
     QVector3D CalculateNormal() const noexcept;
