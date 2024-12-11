@@ -167,6 +167,7 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts,
 
                     QVector3D normal_in_point = alpha * normals[0] + beta * normals[1] + gamma * normals[2];
                     QVector2D uv_point = alpha * uv[0] + beta * uv[1] + gamma * uv[2];
+                    qDebug() << uv_point;
                     normal_in_point += getNormalInPoint(uv_point);
                     int intesity = calculateIntensity(Point(x, y), normal_in_point);
 
