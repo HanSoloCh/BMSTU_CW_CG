@@ -149,7 +149,6 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts,
     bbox_max_x = std::min(bbox_max_x, static_cast<int>(z_buffer_.size()) - 1);
     bbox_max_y = std::min(bbox_max_y, static_cast<int>(z_buffer_[0].size()) - 1);
 
-    int i = 0;
     for (int x = bbox_min_x; x <= bbox_max_x; ++x) {
         for (int y = bbox_min_y; y <= bbox_max_y; ++y) {
             // Вычисляем барицентрические координаты
@@ -157,10 +156,8 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts,
             double alpha = ((pts[1].y() - pts[2].y()) * (x - pts[2].x()) + (pts[2].x() - pts[1].x()) * (y - pts[2].y())) / denom;
             double beta = ((pts[2].y() - pts[0].y()) * (x - pts[2].x()) + (pts[0].x() - pts[2].x()) * (y - pts[2].y())) / denom;
             double gamma = 1.0 - alpha - beta;
-            // qDebug() << alpha << beta << gamma;
             // Проверяем, находится ли точка внутри треугольника
             if (alpha >= 0 && beta >= 0 && gamma >= 0) {
-                i++;
                 // Интерполируем z-координату
                 double z = alpha * pts[0].z() + beta * pts[1].z() + gamma * pts[2].z();
                 // z = 1 / z;
@@ -170,7 +167,7 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts,
 
                     QVector3D normal_in_point = alpha * normals[0] + beta * normals[1] + gamma * normals[2];
                     QVector2D uv_point = alpha * uv[0] + beta * uv[1] + gamma * uv[2];
-                    // qDebug() << uv_point;
+                    qDebug() << uv_point;
                     normal_in_point += getNormalInPoint(uv_point);
                     int intesity = calculateIntensity(Point(x, y), normal_in_point);
 
@@ -181,7 +178,6 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts,
             }
         }
     }
-    qDebug() << i;
 }
 
 int DrawVisitor::calculateIntensity(const Point &point, const QVector3D &normal) const {
