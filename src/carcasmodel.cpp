@@ -19,8 +19,6 @@ CarcasModel::CarcasModel(const QVector<Point> &points,
     , points_(points)
     , triangles_(triangles)
     , points_normals_(points.size()) {
-    qDebug() << uv_coords.size() << points.size();
-    qDebug() << uv_coords_;
     QVector<QVector<QVector3D>> points_normals(points.size());
 
     for (const auto &triangle : triangles) {
