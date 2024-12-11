@@ -66,7 +66,6 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts, const std::array
     for (int x = bbox_min_x; x <= bbox_max_x; ++x) {
         for (int y = bbox_min_y; y <= bbox_max_y; ++y) {
             BarycentricCoords barycentric_coords;
-
             if (CalculateBarycentricCoords(pts, x, y, barycentric_coords) && IsInsideTriangle(barycentric_coords)) {
                 double z = InterpolateValue<double>({pts[0].z(), pts[1].z(), pts[2].z()}, barycentric_coords);
                 if (UpdateZBuffer(x, y, z)) {
@@ -97,11 +96,12 @@ std::tuple<int, int, int, int> DrawVisitor::CalculateBoundingBox(const std::arra
 
 bool DrawVisitor::CalculateBarycentricCoords(const std::array<Point, 3> &pts, int x, int y, BarycentricCoords &barycentric_coords) const {
     double denom = (pts[1].y() - pts[2].y()) * (pts[0].x() - pts[2].x()) + (pts[2].x() - pts[1].x()) * (pts[0].y() - pts[2].y());
-    if (std::abs(denom) < 1e-6) return false;
+    // if (std::abs(denom) < 1e-12) return false;
 
     barycentric_coords.alpha = ((pts[1].y() - pts[2].y()) * (x - pts[2].x()) + (pts[2].x() - pts[1].x()) * (y - pts[2].y())) / denom;
     barycentric_coords.beta = ((pts[2].y() - pts[0].y()) * (x - pts[2].x()) + (pts[0].x() - pts[2].x()) * (y - pts[2].y())) / denom;
     barycentric_coords.gamma = 1.0 - barycentric_coords.alpha - barycentric_coords.beta;
+    qDebug() << barycentric_coords.alpha << barycentric_coords.beta << barycentric_coords.gamma;
     return true;
 }
 
@@ -188,7 +188,7 @@ void DrawMappedVisitor::DrawMappedTriangle(const std::array<Point, 3> &pts, cons
             }
         }
     }
-    qDebug() << i;
+    // qDebug() << i;
 
 }
 
