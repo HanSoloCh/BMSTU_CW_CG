@@ -68,7 +68,6 @@ void DrawVisitor::DrawTriangle(const std::array<Point, 3> &pts, const std::array
             BarycentricCoords barycentric_coords;
 
             if (CalculateBarycentricCoords(pts, x, y, barycentric_coords) && IsInsideTriangle(barycentric_coords)) {
-
                 double z = InterpolateValue<double>({pts[0].z(), pts[1].z(), pts[2].z()}, barycentric_coords);
                 if (UpdateZBuffer(x, y, z)) {
                     QVector3D normal_in_point = InterpolateValue<QVector3D>({normals[0], normals[1], normals[2]}, barycentric_coords);
@@ -154,7 +153,7 @@ void DrawMappedVisitor::Visit(const CarcasModel &carcas_model) {
         std::array<Point, 3> points = carcas_model.GetTrianglePoints(triangle);
         for (auto &point : points) {
             point = ProjectPoint(point);
-            qDebug() << point;
+            // qDebug() << point;
         }
         std::array<QVector3D, 3> normals = carcas_model.GetNormals(triangle);
         std::array<QVector2D, 3> uv_coords = carcas_model.GetTriangleUV(triangle);
@@ -166,12 +165,14 @@ void DrawMappedVisitor::Visit(const CarcasModel &carcas_model) {
 void DrawMappedVisitor::DrawMappedTriangle(const std::array<Point, 3> &pts, const std::array<QVector3D, 3> &normals, const std::array<QVector2D, 3> &uv_coords, const QColor &color) {
     auto [bbox_min_x, bbox_min_y, bbox_max_x, bbox_max_y] = CalculateBoundingBox(pts);
 
+    int i = 0;
+
     for (int x = bbox_min_x; x <= bbox_max_x; ++x) {
         for (int y = bbox_min_y; y <= bbox_max_y; ++y) {
             BarycentricCoords barycentric_coords;
 
             if (CalculateBarycentricCoords(pts, x, y, barycentric_coords) && IsInsideTriangle(barycentric_coords)) {
-
+                i++;
                 double z = InterpolateValue<double>({pts[0].z(), pts[1].z(), pts[2].z()}, barycentric_coords);
                 if (UpdateZBuffer(x, y, z)) {
                     QVector3D normal_in_point = InterpolateValue<QVector3D>({normals[0], normals[1], normals[2]}, barycentric_coords);
@@ -187,6 +188,8 @@ void DrawMappedVisitor::DrawMappedTriangle(const std::array<Point, 3> &pts, cons
             }
         }
     }
+    qDebug() << i;
+
 }
 
 QVector3D DrawMappedVisitor::GetNormalInPoint(const QVector2D &uv) {
