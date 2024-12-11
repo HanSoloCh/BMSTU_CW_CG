@@ -21,8 +21,8 @@ Point::Point(const QVector3D &vector, const QColor &color)
     : AbstractModel(color)
     , QVector3D(vector) {}
 
-void Point::Accept(BaseDrawVisitor &visitor) const {
-    visitor.Visit(*this);
+void Point::Accept(BaseDrawVisitor *visitor) const {
+    visitor->Visit(*this);
 }
 
 void Point::Transform(const QMatrix4x4 &transform_matrix) {

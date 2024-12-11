@@ -25,20 +25,10 @@ QPointF PerspectivStrategyProjection::ViewportToCanvas(double x, double y, const
 
 
 
-Point NewStrategy::ProjectPoint(const Point &point, const QSize &canvas_size) const
-{
-    // return Point(point.x() + canvas_size.width() / 2,
-    //              -point.y() + canvas_size.height() / 2,
-    //              point.z());
-    // double x = (point.x() + canvas_size.width() / 2) / (1 - point.z() / 10);
-    // double y = (-point.y() + canvas_size.height() / 2)/ (1 - point.z() / 10);
-
-    return Point(point.x() + canvas_size.width() / 2,
-                 -point.y() + canvas_size.height() / 2,
-                 point.z());
-//     double perspective = 1000;
-//     double scale = perspective / (perspective + point.z());
-//     double x = canvas_size.width() / 2 + point.x() * scale;
-//     double y = canvas_size.height() / 2 + point.y() * scale;
-//     return Point(x, y, point.z());
+Point NewStrategy::ProjectPoint(const Point &point, const QSize &canvas_size) const {
+    double perspective = 1000;
+    double scale = perspective / (perspective + point.z());
+    double x = canvas_size.width() / 2 + point.x() * scale;
+    double y = canvas_size.height() / 2 - point.y() * scale;
+    return Point(x, y, point.z());
 }

@@ -6,16 +6,15 @@
 
 class Curve {
 public:
-    Curve(const QVector<QPointF> &mainPoints, int steps);
+    explicit Curve(const QVector<QPointF> &main_points, int steps = 50);
     ~Curve() = default;
 
-    QVector<QPointF> calculateBezierCurve();
+    QVector<QPointF> GetPoints() const noexcept;
 
 private:
-    QPointF deCasteljau(double t);
+    QPointF deCasteljau(const QVector<QPointF> &main_points, double t);
 
-    QVector<QPointF> mainPoints;
-    int steps;
+    QVector<QPointF> points_;
 };
 
 

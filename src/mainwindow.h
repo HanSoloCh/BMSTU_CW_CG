@@ -16,21 +16,20 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() = default;
 
-    QString GetColor() const;
-    QString GetAxis() const;
-
 protected:
     void AddButtons(QWidget *central_widget, QVBoxLayout *layout);
     void AddAxisButtons(QWidget *central_widget, QVBoxLayout *layout);
+    void AddMaterialsButtons(QWidget *central_widget, QVBoxLayout *layout);
 
 private slots:
     void onGenerateButtonClicked();
 
 
 private:
-    SolutionViewer *solution_viewer_;
+    QString GetFileName() const;
+
     CurveCanvas *curve_canvas_;
-    QButtonGroup *radio_button_group_;
-    QColor model_color_;
+    QButtonGroup *axis_button_group_;
+    QButtonGroup *materials_button_group_;
 };
 #endif // MAINWINDOW_H

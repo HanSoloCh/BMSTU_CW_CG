@@ -3,18 +3,20 @@
 
 #include <QWidget>
 #include <QMouseEvent>
+#include <QColor>
 
+#include "carcasmodel.h"
 
 class CurveCanvas : public QWidget {
     Q_OBJECT
 public:
     explicit CurveCanvas(QWidget *parent = nullptr);
 
-    // Нужно убрать из public
-    QVector<QPointF> generateCurvePoints();
-    void setGeneratedPoints(const QVector<QPointF> &points);
+    QVector<QPointF> GetCurvePoints(const axis_t axis = Ox, int steps = 50);
+    QColor GetColor() const noexcept;
 
 public slots:
+    void SetColor(const QColor &color);
     void Clean();
 
 protected:
@@ -22,9 +24,8 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
 
 private:
-    QVector<QPointF> mainPoints;
-    QVector<QPointF> generatedPoints;
-    int steps = 50; // Количество точек на кривой
+    QVector<QPointF> main_points_;
+    QColor color_;
 };
 
 #endif // CURVECANVAS_H

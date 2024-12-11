@@ -15,6 +15,7 @@ class Canvas : public QWidget {
     Q_OBJECT
 public:
     explicit Canvas(QWidget *parent = nullptr);
+    explicit Canvas(const QImage &normal_map, QWidget *parent = nullptr);
 
     void AddModel(const std::shared_ptr<AbstractModel> carcas_model);
     void AddLight(const std::shared_ptr<AbstractLight> light);
@@ -27,6 +28,7 @@ protected:
 private:
     QVector<std::shared_ptr<AbstractModel>> scene_objects_;
     QVector<std::shared_ptr<AbstractLight>> light_;
+    QImage normal_map_;
 };
 
 #endif // CANVAS_H

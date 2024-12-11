@@ -6,9 +6,14 @@
 #include "strategy.h"
 #include "drawvisitor.h"
 
-
 Canvas::Canvas(QWidget *parent)
     : QWidget(parent) {
+    setFixedSize(1000, 1000);
+}
+
+Canvas::Canvas(const QImage &normal_map, QWidget *parent)
+    : QWidget(parent)
+    , normal_map_(normal_map) {
     setFixedSize(1000, 1000);
 }
 
@@ -33,11 +38,18 @@ void Canvas::paintEvent(QPaintEvent *event) {
 
     AbstractStrategyProjection *strategy = new NewStrategy();
 
-    DrawVisitor visitor(&painter, size(), strategy, light_);
-
+    std::unique_ptr<BaseDrawVisitor> visitor;
+    if (normal_map_.isNull())
+        visitor = std::make_unique<DrawVisitor>(&painter, size(), strategy, light_);
+    else
+        visitor = std::make_unique<DrawMappedVisitor>(&painter,
+                                                      size(),
+                                                      strategy,
+                                                      light_,
+                                                      normal_map_);
     auto start = clock();
     for (const auto &object : scene_objects_) {
-        object->Accept(visitor);
+        object->Accept(visitor.get());
     }
     auto stop = clock();
     // qDebug() << stop - start;

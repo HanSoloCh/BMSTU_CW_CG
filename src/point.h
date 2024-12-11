@@ -21,7 +21,7 @@ public:
         return QPointF(x(), y());
     }
 
-    void Accept(BaseDrawVisitor &visitor) const override;
+    void Accept(BaseDrawVisitor *visitor) const override;
 
     void Transform(const QMatrix4x4 &transform_matrix) override;
 
