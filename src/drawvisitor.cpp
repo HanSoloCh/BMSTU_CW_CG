@@ -101,12 +101,12 @@ bool DrawVisitor::CalculateBarycentricCoords(const std::array<Point, 3> &pts, in
     barycentric_coords.alpha = ((pts[1].y() - pts[2].y()) * (x - pts[2].x()) + (pts[2].x() - pts[1].x()) * (y - pts[2].y())) / denom;
     barycentric_coords.beta = ((pts[2].y() - pts[0].y()) * (x - pts[2].x()) + (pts[0].x() - pts[2].x()) * (y - pts[2].y())) / denom;
     barycentric_coords.gamma = 1.0 - barycentric_coords.alpha - barycentric_coords.beta;
-    qDebug() << barycentric_coords.alpha << barycentric_coords.beta << barycentric_coords.gamma;
+    // qDebug() << barycentric_coords.alpha << barycentric_coords.beta << barycentric_coords.gamma;
     return true;
 }
 
 bool DrawVisitor::IsInsideTriangle(const BarycentricCoords &barycentric_coords) const {
-    return (barycentric_coords.alpha > 0 && barycentric_coords.beta > 0 && barycentric_coords.gamma > 0);
+    return (barycentric_coords.alpha >= 0 && barycentric_coords.beta >= 0 && barycentric_coords.gamma >= 0);
 }
 
 bool DrawVisitor::UpdateZBuffer(int x, int y, double z) {
@@ -188,7 +188,7 @@ void DrawMappedVisitor::DrawMappedTriangle(const std::array<Point, 3> &pts, cons
             }
         }
     }
-    // qDebug() << i;
+    qDebug() << i;
 
 }
 
