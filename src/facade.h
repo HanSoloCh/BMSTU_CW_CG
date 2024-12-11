@@ -10,7 +10,7 @@
 class Facade {
 public:
     Facade();
-    Facade(const QImage &normal_map);
+    explicit Facade(const QImage &normal_map);
     ~Facade() = default;
 
     void AddObject(std::shared_ptr<AbstractModel> object);
@@ -22,6 +22,7 @@ public:
     Canvas *GetCanvas() const;
 
 private:
+    void AddBaseLight();
     std::unique_ptr<Canvas> canvas_;
 };
 
