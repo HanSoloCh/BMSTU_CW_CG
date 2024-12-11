@@ -41,7 +41,7 @@ QVector<Point> CarcasModel::GetPoints() const noexcept { return points_; }
 
 QVector<std::array<int, 3>> CarcasModel::GetTriangles() const noexcept { return triangles_; }
 
-std::array<QVector3D, 3> CarcasModel::GetNormals(const std::array<int, 3> &triangle) const {
+std::array<QVector3D, 3> CarcasModel::GetTriangleNormals(const std::array<int, 3> &triangle) const {
     return {points_normals_[triangle[0]], points_normals_[triangle[1]], points_normals_[triangle[2]]};
 }
 

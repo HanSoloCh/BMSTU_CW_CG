@@ -30,6 +30,11 @@ public:
 
     std::array<Point, 3> GetPoints() const noexcept;
     std::array<QVector3D, 3> GetNormals() const noexcept;
+    std::array<QVector2D, 3> GetUVCoords() const noexcept;
+
+
+    void SetUVCoords(const std::array<QVector2D, 3> &uv_coords);
+    void SetPoints(const std::array<Point, 3> &points);
 
     void Accept(BaseDrawVisitor *visitor) const override;
 
@@ -51,8 +56,10 @@ public:
 
     QVector3D CalculateNormal() const noexcept;
 private:
+    void CalculateUVCoords();
     std::array<Point, 3> points_;
     std::array<QVector3D, 3> points_normals_;
+    std::array<QVector2D, 3> uv_coords_;
 };
 
 

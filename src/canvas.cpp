@@ -52,6 +52,6 @@ void Canvas::paintEvent(QPaintEvent *event) {
         object->Accept(visitor.get());
     }
     auto stop = clock();
-    // qDebug() << stop - start;
+    qDebug() << stop - start;
     delete strategy;
 }

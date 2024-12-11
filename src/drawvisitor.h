@@ -51,6 +51,7 @@ public:
     void Visit(const Triangle &triangle) override;
     void Visit(const CarcasModel &carcas_model) override;
 
+
 protected:
     struct BarycentricCoords {
         double alpha;
@@ -61,9 +62,10 @@ protected:
     Point ProjectPoint(const Point &point) const;
 
     void DrawPoint(const Point &point);
-    void DrawTriangle(const std::array<Point, 3> &pts,
-                      const std::array<QVector3D, 3> &normals,
-                      const QColor &color);
+    void DrawTriangle(const Triangle &triangle);
+    virtual void DrawTrianglePixel(const QPoint &point,
+                                   const Triangle &triangle,
+                                   const BarycentricCoords &barycentric_coords);
 
 
     std::tuple<int, int, int, int> CalculateBoundingBox(const std::array<Point, 3> &pts) const;
@@ -74,7 +76,7 @@ protected:
     bool IsInsideTriangle(const BarycentricCoords &barycentric_coords) const;
     bool UpdateZBuffer(int x, int y, double z);
 
-    int calculateIntensity(const Point &point, const QVector3D &mormal) const;
+    int CalculateIntensity(const Point &point, const QVector3D &mormal) const;
 
     template <typename T>
     T InterpolateValue(const std::array<T, 3> values,
@@ -106,13 +108,14 @@ public:
                       const QImage &normal_map);
     ~DrawMappedVisitor() = default;
 
+    void Visit(const Point &point) override;
+    void Visit(const Triangle &triangle) override;
     void Visit(const CarcasModel &carcas_model) override;
 protected:
-    void DrawMappedTriangle(const std::array<Point, 3> &pts,
-                            const std::array<QVector3D, 3> &normals,
-                            const std::array<QVector2D, 3> &uv_coords,
-                            const QColor &color);
-    QVector3D GetNormalInPoint(const QVector2D &uv);
+    virtual void DrawTrianglePixel(const QPoint &point,
+                                   const Triangle &triangle,
+                                   const BarycentricCoords &barycentric_coords) override;
+    QVector3D GetNormalInPoint(const QVector2D &uv) const;
 private:
     QImage normal_map_;
 };

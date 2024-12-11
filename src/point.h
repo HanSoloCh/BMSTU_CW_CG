@@ -10,8 +10,8 @@
 class Point: public AbstractModel, public QVector3D {
 public:
     Point(double x = 0.0, double y = 0.0, double z = 0.0, const QColor &color = Qt::white);
-    Point(QPoint p, double z, const QColor &color = Qt::white);
-    Point(QPointF p, double z, const QColor &color = Qt::white);
+    Point(QPoint p, double z = 0.0, const QColor &color = Qt::white);
+    Point(QPointF p, double z = 0.0, const QColor &color = Qt::white);
     Point(const QVector3D &vector, const QColor &color = Qt::white);
 
     ~Point() = default;

@@ -22,7 +22,7 @@ public:
 
     QVector<Point> GetPoints() const noexcept;
     QVector<std::array<int, 3>> GetTriangles() const noexcept;
-    std::array<QVector3D, 3> GetNormals(const std::array<int, 3> &triangle) const;
+    std::array<QVector3D, 3> GetTriangleNormals(const std::array<int, 3> &triangle) const;
     std::array<Point, 3> GetTrianglePoints(const std::array<int, 3> &triangle) const noexcept;
 
     std::array<QVector2D, 3> GetTriangleUV(const std::array<int, 3> &triangle) const noexcept;
