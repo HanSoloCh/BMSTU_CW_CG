@@ -154,6 +154,7 @@ void DrawMappedVisitor::Visit(const CarcasModel &carcas_model) {
         std::array<Point, 3> points = carcas_model.GetTrianglePoints(triangle);
         for (auto &point : points) {
             point = ProjectPoint(point);
+            qDebug() << point;
         }
         std::array<QVector3D, 3> normals = carcas_model.GetNormals(triangle);
         std::array<QVector2D, 3> uv_coords = carcas_model.GetTriangleUV(triangle);
@@ -175,7 +176,7 @@ void DrawMappedVisitor::DrawMappedTriangle(const std::array<Point, 3> &pts, cons
                 if (UpdateZBuffer(x, y, z)) {
                     QVector3D normal_in_point = InterpolateValue<QVector3D>({normals[0], normals[1], normals[2]}, barycentric_coords);
                     QVector2D uv_point = InterpolateValue<QVector2D>({uv_coords[0], uv_coords[1], uv_coords[2]}, barycentric_coords);
-                    qDebug() << uv_point;
+                    // qDebug() << uv_point;
                     normal_in_point += GetNormalInPoint(uv_point);
                     int intesity = calculateIntensity(Point(x, y), normal_in_point);
 
