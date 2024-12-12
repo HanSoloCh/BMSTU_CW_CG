@@ -47,11 +47,11 @@ void Canvas::paintEvent(QPaintEvent *event) {
                                                       strategy,
                                                       light_,
                                                       normal_map_);
-    auto start = clock();
+    // auto start = clock();
     for (const auto &object : scene_objects_) {
         object->Accept(visitor.get());
     }
-    auto stop = clock();
-    qDebug() << stop - start;
+    // auto stop = clock();
+    // qDebug() << stop - start;
     delete strategy;
 }

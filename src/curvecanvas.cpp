@@ -2,6 +2,7 @@
 
 #include <QPainter>
 #include <QPainterPath>
+#include <QMessageBox>
 
 #include "curve.h"
 
@@ -78,8 +79,10 @@ void CurveCanvas::Clean() {
 }
 
 void CurveCanvas::mousePressEvent(QMouseEvent *event) {
-    if (main_points_.size() < 3) {
-        main_points_.append(event->pos());
-        update();
+    if (main_points_.size() >= 3) {
+        QMessageBox::warning(this, "Ошибка", "Задано максимальное количество точек.");
+        return;
     }
+    main_points_.append(event->pos());
+    update();
 }

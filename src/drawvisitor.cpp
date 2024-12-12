@@ -32,9 +32,8 @@ void DrawVisitor::DrawPoint(const Point &point) {
     double x = point.x();
     double y = point.y();
     double z = point.z();
-    if (z < z_buffer_[x][y]) {
+    if (UpdateZBuffer(x, y, z)) {
         painter_->drawPoint(x, y);
-        z_buffer_[x][y] = z;
     }
 }
 
