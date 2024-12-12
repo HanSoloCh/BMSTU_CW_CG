@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(curve_canvas_);
 
     AddButtons(central_widget, layout);
+    central_widget->setFixedSize(600, 800);
 }
 
 void MainWindow::AddButtons(QWidget *central_widget, QVBoxLayout *layout) {
@@ -66,6 +67,9 @@ void MainWindow::AddAxisButtons(QWidget *central_widget, QVBoxLayout *layout) {
     radio_box_layout->addWidget(radio_button_ox);
     radio_box_layout->addWidget(radio_button_oy);
 
+    QLabel *label = new QLabel("Ось вращения:", central_widget);
+
+    layout->addWidget(label);
     layout->addLayout(radio_box_layout);
 }
 

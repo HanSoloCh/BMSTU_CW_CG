@@ -73,6 +73,12 @@ void SolutionViewer::keyPressEventWithCtrl(QKeyEvent *event) {
     case Qt::Key_Q:
         canvas_facade_->Rotate(0, 0, 1);
         break;
+    case Qt::Key_Minus:
+        canvas_facade_->Move(0, 0, 5);
+        break;
+    case Qt::Key_Equal:
+        canvas_facade_->Move(0, 0, -5);
+        break;
     }
 
 }
