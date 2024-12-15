@@ -24,7 +24,10 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
 
 private:
+    void SortPoints();
+
     QVector<QPointF> main_points_;
+    QVector<QPointF> control_points_;
     QColor color_;
 };
 
