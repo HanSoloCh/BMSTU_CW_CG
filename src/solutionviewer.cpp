@@ -3,6 +3,8 @@
 #include <memory>
 #include <QVBoxLayout>
 #include <QKeyEvent>
+#include <QRadioButton>
+#include <QLabel>
 
 #include "carcasmodel.h"
 #include "facade.h"
@@ -10,13 +12,15 @@
 SolutionViewer::SolutionViewer(QWidget *parent)
     : QMainWindow(parent)
     , canvas_facade_(std::make_unique<Facade>()) {
-    SetSentralWidget();
-}
+    QWidget *central_widget = new QWidget(this);
+    setCentralWidget(central_widget);
 
-SolutionViewer::SolutionViewer(const QImage &normal_map, QWidget *parent)
-    : QMainWindow(parent)
-    , canvas_facade_(std::make_unique<Facade>(normal_map)) {
-    SetSentralWidget();
+    QVBoxLayout *layout = new QVBoxLayout(central_widget);
+
+    AddMaterialsButtons(central_widget, layout);
+    AddTexturesButtons(central_widget, layout);
+
+    layout->addWidget(canvas_facade_->GetCanvas());
 }
 
 void SolutionViewer::SetSentralWidget() {
@@ -25,6 +29,12 @@ void SolutionViewer::SetSentralWidget() {
 
     QVBoxLayout *layout = new QVBoxLayout(central_widget);
     layout->addWidget(canvas_facade_->GetCanvas());
+}
+
+void SolutionViewer::SetDefaultButton(QButtonGroup *button_group) {
+    button_group->blockSignals(true);
+    button_group->button(0)->setChecked(true);
+    button_group->blockSignals(false);
 }
 
 void SolutionViewer::SetModel(const QVector<QPointF> &curve, const axis_t &axis, int slices, const QColor &color) {
@@ -50,6 +60,70 @@ void SolutionViewer::keyPressEventWithoutCtrl(QKeyEvent *event) {
         canvas_facade_->Move(0, 5, 0);
         break;
     }
+}
+
+void SolutionViewer::AddMaterialsButtons(QWidget *central_widget, QVBoxLayout *layout) {
+    materials_button_group_ = new QButtonGroup(central_widget);
+    QRadioButton *radio_button_no_material = new QRadioButton("Без материала", central_widget);
+    QRadioButton *radio_button_wood = new QRadioButton("Дерево", central_widget);
+    QRadioButton *radio_button_rock = new QRadioButton("Камень", central_widget);
+    QRadioButton *radio_button_metal = new QRadioButton("Металл", central_widget);
+
+    radio_button_no_material->setChecked(true);
+    materials_button_group_->addButton(radio_button_no_material, 0);
+    materials_button_group_->addButton(radio_button_wood, 1);
+    materials_button_group_->addButton(radio_button_rock, 2);
+    materials_button_group_->addButton(radio_button_metal, 3);
+
+    QHBoxLayout *radio_box_layout = new QHBoxLayout();
+    radio_box_layout->addWidget(radio_button_no_material);
+    radio_box_layout->addWidget(radio_button_wood);
+    radio_box_layout->addWidget(radio_button_rock);
+    radio_box_layout->addWidget(radio_button_metal);
+
+    connect(materials_button_group_, &QButtonGroup::idToggled, this, [this](int id, bool checked) {
+        SetDefaultButton(textures_button_group_);
+        if (checked) {
+            canvas_facade_->SetNormalMap(GetNormalMapName(id));
+        }
+    });
+
+    QLabel *label = new QLabel("Материал:", central_widget);
+
+    layout->addWidget(label);
+    layout->addLayout(radio_box_layout);
+}
+
+void SolutionViewer::AddTexturesButtons(QWidget *central_widget, QVBoxLayout *layout) {
+    textures_button_group_ = new QButtonGroup(central_widget);
+    QRadioButton *radio_button_no_material = new QRadioButton("Без текстуры", central_widget);
+    QRadioButton *radio_button_wood = new QRadioButton("Дерево", central_widget);
+    QRadioButton *radio_button_rock = new QRadioButton("Камень", central_widget);
+    QRadioButton *radio_button_metal = new QRadioButton("Металл", central_widget);
+
+    radio_button_no_material->setChecked(true);
+    textures_button_group_->addButton(radio_button_no_material, 0);
+    textures_button_group_->addButton(radio_button_wood, 1);
+    textures_button_group_->addButton(radio_button_rock, 2);
+    textures_button_group_->addButton(radio_button_metal, 3);
+
+    QHBoxLayout *radio_box_layout = new QHBoxLayout();
+    radio_box_layout->addWidget(radio_button_no_material);
+    radio_box_layout->addWidget(radio_button_wood);
+    radio_box_layout->addWidget(radio_button_rock);
+    radio_box_layout->addWidget(radio_button_metal);
+
+    connect(textures_button_group_, &QButtonGroup::idToggled, this, [this](int id, bool checked) {
+        SetDefaultButton(materials_button_group_);
+        if (checked) {
+            canvas_facade_->SetTexture(GetTextureName(id));
+        }
+    });
+
+    QLabel *label = new QLabel("Текстура:", central_widget);
+
+    layout->addWidget(label);
+    layout->addLayout(radio_box_layout);
 }
 
 void SolutionViewer::keyPressEventWithCtrl(QKeyEvent *event) {
@@ -90,3 +164,30 @@ void SolutionViewer::keyPressEvent(QKeyEvent *event) {
     else
         keyPressEventWithoutCtrl(event);
 }
+
+QString SolutionViewer::GetNormalMapName(int id) const {
+    switch (id) {
+    case 1:
+        return "wood_map.png";
+    case 2:
+        return "rock_map.png";
+    case 3:
+        return "metal_map.png";
+    default:
+        return ".";
+    }
+}
+
+QString SolutionViewer::GetTextureName(int id) const {
+    switch (id) {
+    case 1:
+        return "wood.png";
+    case 2:
+        return "rock.png";
+    case 3:
+        return "metal.png";
+    default:
+        return ".";
+    }
+}
+

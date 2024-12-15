@@ -19,13 +19,11 @@ MainWindow::MainWindow(QWidget *parent)
     QVBoxLayout *layout = new QVBoxLayout(central_widget);
 
     AddAxisButtons(central_widget, layout);
-    AddMaterialsButtons(central_widget, layout);
 
     curve_canvas_ = new CurveCanvas(central_widget);
     layout->addWidget(curve_canvas_);
 
     AddButtons(central_widget, layout);
-    central_widget->setFixedSize(600, 800);
 }
 
 void MainWindow::AddButtons(QWidget *central_widget, QVBoxLayout *layout) {
@@ -73,31 +71,6 @@ void MainWindow::AddAxisButtons(QWidget *central_widget, QVBoxLayout *layout) {
     layout->addLayout(radio_box_layout);
 }
 
-void MainWindow::AddMaterialsButtons(QWidget *central_widget, QVBoxLayout *layout) {
-    materials_button_group_ = new QButtonGroup(central_widget);
-    QRadioButton *radio_button_no_material = new QRadioButton("Без материала", central_widget);
-    QRadioButton *radio_button_wood = new QRadioButton("Дерево", central_widget);
-    QRadioButton *radio_button_rock = new QRadioButton("Камень", central_widget);
-    QRadioButton *radio_button_metal = new QRadioButton("Металл", central_widget);
-
-    radio_button_no_material->setChecked(true);
-    materials_button_group_->addButton(radio_button_no_material, 0);
-    materials_button_group_->addButton(radio_button_wood, 1);
-    materials_button_group_->addButton(radio_button_rock, 2);
-    materials_button_group_->addButton(radio_button_metal, 3);
-
-    QHBoxLayout *radio_box_layout = new QHBoxLayout();
-    radio_box_layout->addWidget(radio_button_no_material);
-    radio_box_layout->addWidget(radio_button_wood);
-    radio_box_layout->addWidget(radio_button_rock);
-    radio_box_layout->addWidget(radio_button_metal);
-
-    QLabel *label = new QLabel("Материал:", central_widget);
-
-    layout->addWidget(label);
-    layout->addLayout(radio_box_layout);
-}
-
 
 void MainWindow::onGenerateButtonClicked() {
     QVector<QPointF> curve_points = curve_canvas_->GetCurvePoints();
@@ -106,14 +79,8 @@ void MainWindow::onGenerateButtonClicked() {
         return;
     }
 
-    QString texture_name = GetFileName();
-    QImage texture(texture_name);
-    if (materials_button_group_->checkedId() != 0 && texture.isNull()) {
-        QMessageBox::warning(this, "Ошибка", "Не найден файл " + texture_name + ".");
-        return;
-    }
     // Показать окно тела вращения
-    SolutionViewer *solution_viewer = new SolutionViewer(QImage(texture_name), this);
+    SolutionViewer *solution_viewer = new SolutionViewer(this);
     for (auto &point : curve_points) {
         point -= QPointF(curve_canvas_->width() / 2, curve_canvas_->height() / 2);
         point.setY(-point.y());
@@ -121,17 +88,4 @@ void MainWindow::onGenerateButtonClicked() {
 
     solution_viewer->SetModel(curve_points, static_cast<axis_t>(axis_button_group_->checkedId()), 30, curve_canvas_->GetColor());
     solution_viewer->show();
-}
-
-QString MainWindow::GetFileName() const {
-    switch (materials_button_group_->checkedId()) {
-    case 1:
-        return "wood.png";
-    case 2:
-        return "rock.png";
-    case 3:
-        return "metal.png";
-    default:
-        return ".";
-    }
 }

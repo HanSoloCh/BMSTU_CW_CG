@@ -7,13 +7,8 @@
 #include "drawvisitor.h"
 
 Canvas::Canvas(QWidget *parent)
-    : QWidget(parent) {
-    setFixedSize(1000, 1000);
-}
-
-Canvas::Canvas(const QImage &normal_map, QWidget *parent)
     : QWidget(parent)
-    , normal_map_(normal_map) {
+    , draw_type_(def) {
     setFixedSize(1000, 1000);
 }
 
@@ -31,6 +26,20 @@ void Canvas::Transform(const QMatrix4x4 &transform_matrix) {
     }
 }
 
+void Canvas::SetDefault() {
+    draw_type_ = def;
+}
+
+void Canvas::SetNormalMap(const QImage &normal_map) {
+    draw_type_ = mapping;
+    image_ = normal_map;
+}
+
+void Canvas::SetTexuture(const QImage &texture) {
+    draw_type_ = textuting;
+    image_ = texture;
+}
+
 
 void Canvas::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
@@ -39,14 +48,22 @@ void Canvas::paintEvent(QPaintEvent *event) {
     AbstractStrategyProjection *strategy = new NewStrategy();
 
     std::unique_ptr<BaseDrawVisitor> visitor;
-    if (normal_map_.isNull())
+    // Можно было бы полиморфизмом
+    if (draw_type_ == def)
         visitor = std::make_unique<DrawVisitor>(&painter, size(), strategy, light_);
-    else
+    else if (draw_type_ == mapping)
         visitor = std::make_unique<DrawMappedVisitor>(&painter,
                                                       size(),
                                                       strategy,
                                                       light_,
-                                                      normal_map_);
+                                                      image_);
+    else
+        visitor = std::make_unique<DrawTextureVisitor>(&painter,
+                                                       size(),
+                                                       strategy,
+                                                       light_,
+                                                       image_);
+
     // auto start = clock();
     for (const auto &object : scene_objects_) {
         object->Accept(visitor.get());

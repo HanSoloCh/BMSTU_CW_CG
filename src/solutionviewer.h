@@ -2,6 +2,8 @@
 #define SOLUTIONVIEWER_H
 
 #include <QMainWindow>
+#include <QButtonGroup>
+#include <QVBoxLayout>
 
 #include "memory"
 #include "facade.h"
@@ -19,9 +21,20 @@ protected:
     void keyPressEventWithCtrl(QKeyEvent *event);
     void keyPressEventWithoutCtrl(QKeyEvent *event);
 
+    void AddMaterialsButtons(QWidget *central_widget, QVBoxLayout *layout);
+    void AddTexturesButtons(QWidget *central_widget, QVBoxLayout *layout);
+
+    QString GetNormalMapName(int id) const;
+    QString GetTextureName(int id) const;
+
 private:
     void SetSentralWidget();
+    void SetDefaultButton(QButtonGroup *button_group);
+
     std::unique_ptr<Facade> canvas_facade_;
+
+    QButtonGroup *materials_button_group_;
+    QButtonGroup *textures_button_group_;
 };
 
 #endif // SOLUTIONVIEWER_H

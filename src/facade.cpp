@@ -13,11 +13,6 @@ Facade::Facade()
     AddBaseLight();
 }
 
-Facade::Facade(const QImage &normal_map)
-    : canvas_(std::make_unique<Canvas>(normal_map)) {
-    AddBaseLight();
-}
-
 void Facade::AddBaseLight() {
     AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, -1)));
 }
@@ -48,6 +43,23 @@ void Facade::Rotate(double x, double y, double z) {
     canvas_->update();
 }
 
+void Facade::SetNormalMap(const QString &file_name) {
+    QImage image(file_name);
+    if (image.isNull())
+        canvas_->SetDefault();
+    else
+        canvas_->SetNormalMap(QImage(file_name));
+    canvas_->update();
+}
+
+void Facade::SetTexture(const QString &file_name) {
+    QImage image(file_name);
+    if (image.isNull())
+        canvas_->SetDefault();
+    else
+        canvas_->SetTexuture(QImage(file_name));
+    canvas_->update();
+}
 
 Canvas *Facade::GetCanvas() const {
     return canvas_.get();

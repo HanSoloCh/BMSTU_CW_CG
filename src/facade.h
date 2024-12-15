@@ -19,6 +19,9 @@ public:
     void Move(double x, double y, double z);
     void Rotate(double x, double y, double z);
 
+    void SetNormalMap(const QString &file_name);
+    void SetTexture(const QString &file_name);
+
     Canvas *GetCanvas() const;
 
 private:

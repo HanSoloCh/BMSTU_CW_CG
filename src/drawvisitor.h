@@ -120,5 +120,29 @@ private:
     QImage normal_map_;
 };
 
+class DrawTextureVisitor : public DrawVisitor {
+public:
+    DrawTextureVisitor(QPainter *painter,
+                       QSize canvas_size,
+                       const AbstractStrategyProjection *projection,
+                       QVector<std::shared_ptr<AbstractLight>> light,
+                       const QImage &normal_map);
+    DrawTextureVisitor(const DrawVisitor &draw_visitor,
+                       const QImage &normal_map);
+    ~DrawTextureVisitor() = default;
+
+    void Visit(const Point &point) override;
+    void Visit(const Triangle &triangle) override;
+    void Visit(const CarcasModel &carcas_model) override;
+protected:
+    virtual void DrawTrianglePixel(const QPoint &point,
+                                   const Triangle &triangle,
+                                   const BarycentricCoords &barycentric_coords) override;
+    QColor GetColorInPoint(const QVector2D &uv) const;
+private:
+    QImage texutre_;
+};
+
+
 
 #endif // DRAWVISITOR_H

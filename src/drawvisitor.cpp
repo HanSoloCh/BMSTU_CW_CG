@@ -210,3 +210,60 @@ QVector3D DrawMappedVisitor::GetNormalInPoint(const QVector2D &uv) const {
     return normal.normalized();
 }
 
+DrawTextureVisitor::DrawTextureVisitor(QPainter *painter,
+                                       QSize canvas_size,
+                                       const AbstractStrategyProjection *projection,
+                                       QVector<std::shared_ptr<AbstractLight>> light,
+                                       const QImage &texture)
+    : DrawVisitor(painter, canvas_size, projection, light)
+    , texutre_(texture) {}
+
+DrawTextureVisitor::DrawTextureVisitor(const DrawVisitor &draw_visitor, const QImage &texutre)
+    : DrawVisitor(draw_visitor)
+    , texutre_(texutre) {}
+
+
+void DrawTextureVisitor::Visit(const Point &point) {
+    DrawVisitor::Visit(point);
+}
+
+void DrawTextureVisitor::Visit(const Triangle &triangle) {
+    DrawVisitor::Visit(triangle);
+}
+
+void DrawTextureVisitor::Visit(const CarcasModel &carcas_model) {
+    for (const auto &triangle : carcas_model.GetTriangles()) {
+        Triangle tmp_triangle(carcas_model.GetTrianglePoints(triangle),
+                              carcas_model.GetTriangleNormals(triangle),
+                              carcas_model.GetColor());
+        tmp_triangle.SetUVCoords(carcas_model.GetTriangleUV(triangle));
+        Visit(tmp_triangle);
+    }
+}
+
+void DrawTextureVisitor::DrawTrianglePixel(const QPoint &point,
+                                          const Triangle &triangle,
+                                          const BarycentricCoords &barycentric_coords) {
+    std::array<QVector3D, 3> normals = triangle.GetNormals();
+    QVector3D normal_in_point = InterpolateValue<QVector3D>({normals[0], normals[1], normals[2]}, barycentric_coords);
+
+    std::array<QVector2D, 3> uv_in_point = triangle.GetUVCoords();
+    int intesity = CalculateIntensity(Point(point), normal_in_point.normalized());
+
+    QVector2D uv_point = InterpolateValue<QVector2D>({uv_in_point[0], uv_in_point[1], uv_in_point[2]}, barycentric_coords);
+
+    SetColor(IntensityColor(GetColorInPoint(uv_point), intesity));
+    painter_->drawPoint(point);
+    ResetColor();
+}
+
+
+QColor DrawTextureVisitor::GetColorInPoint(const QVector2D &uv) const {
+    int x = static_cast<int>(uv.x() * texutre_.width()) % texutre_.width();
+    int y = static_cast<int>(uv.y() * texutre_.height()) % texutre_.height();
+
+    return texutre_.pixelColor(x, y);
+}
+
+
+

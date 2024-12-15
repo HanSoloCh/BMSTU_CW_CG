@@ -9,7 +9,7 @@
 CurveCanvas::CurveCanvas(QWidget *parent)
     : QWidget(parent)
     , color_(Qt::gray) {
-    setFixedSize(600, 600);
+    setFixedSize(800, 800);
 }
 
 QVector<QPointF> CurveCanvas::GetCurvePoints(const axis_t axis, int steps) {
