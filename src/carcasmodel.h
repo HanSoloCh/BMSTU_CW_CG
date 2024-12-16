@@ -35,7 +35,6 @@ private:
     QVector<Point> points_; // Вершины
     QVector<std::array<int, 3>> triangles_; // Индексы вершин
 
-    QHash<Point, QVector3D> normals_;
     QVector<QVector3D> points_normals_;
     QVector<QVector2D> uv_coords_;
 };
