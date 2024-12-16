@@ -73,7 +73,7 @@ void MainWindow::AddAxisButtons(QWidget *central_widget, QVBoxLayout *layout) {
 
 
 void MainWindow::onGenerateButtonClicked() {
-    QVector<QPointF> curve_points = curve_canvas_->GetCurvePoints();
+    QVector<QPointF> curve_points = curve_canvas_->GetCurvePoints(static_cast<axis_t>(axis_button_group_->checkedId()));
     if (curve_points.size() < 2) {
         QMessageBox::warning(this, "Ошибка", "Необходимо задать хотя бы две точки.");
         return;

@@ -20,7 +20,7 @@ QVector<QPointF> CurveCanvas::GetCurvePoints(const axis_t axis, int steps) {
 
     if (axis == Ox && main_points_[0].x() < main_points_[1].x()) {
         std::swap(main_points_[0], main_points_[1]);
-    } else if (axis == Oy && main_points_[0].y() < main_points_[1].y()) {
+    } else if (axis == Oy && main_points_[0].y() > main_points_[1].y()) {
         std::swap(main_points_[0], main_points_[1]);
     }
 
