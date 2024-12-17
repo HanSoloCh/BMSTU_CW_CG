@@ -1,9 +1,7 @@
 #include "curve.h"
 
-
 Curve::Curve(const QVector<QPointF> &main_points,
-             const QVector<QPointF> &control_points,
-             int steps) {
+             const QVector<QPointF> &control_points, int steps) {
     if (control_points.empty()) {
         QPointF start = main_points[0];
         QPointF end = main_points[1];
@@ -37,6 +35,4 @@ QPointF Curve::deCasteljau(const QVector<QPointF> &main_points,
     return points[0];
 }
 
-QVector<QPointF> Curve::GetPoints() const noexcept {
-    return points_;
-}
+QVector<QPointF> Curve::GetPoints() const noexcept { return points_; }

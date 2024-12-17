@@ -3,12 +3,12 @@
 
 #include <memory>
 
-#include "canvas.h"
 #include "abstractmodel.h"
+#include "canvas.h"
 #include "light.h"
 
 class Facade {
-public:
+   public:
     Facade();
     explicit Facade(const QImage &normal_map);
     ~Facade() = default;
@@ -24,10 +24,9 @@ public:
 
     Canvas *GetCanvas() const;
 
-private:
+   private:
     void AddBaseLight();
     std::unique_ptr<Canvas> canvas_;
 };
 
-
-#endif // FACADE_H
+#endif  // FACADE_H

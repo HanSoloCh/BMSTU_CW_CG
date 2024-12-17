@@ -1,22 +1,25 @@
 #ifndef SOLUTIONVIEWER_H
 #define SOLUTIONVIEWER_H
 
-#include <QMainWindow>
 #include <QButtonGroup>
+#include <QMainWindow>
 #include <QVBoxLayout>
 
-#include "memory"
-#include "facade.h"
 #include "carcasmodel.h"
+#include "facade.h"
+#include "memory"
 
 class SolutionViewer : public QMainWindow {
     Q_OBJECT
-public:
+   public:
     explicit SolutionViewer(QWidget *parent = nullptr);
-    explicit SolutionViewer(const QImage &normal_map, QWidget *parent = nullptr);
+    explicit SolutionViewer(const QImage &normal_map,
+                            QWidget *parent = nullptr);
 
-    void SetModel(const QVector<QPointF> &curve, const axis_t &axis, int slices = 30, const QColor &color = Qt::gray);
-protected:
+    void SetModel(const QVector<QPointF> &curve, const axis_t &axis,
+                  int slices = 30, const QColor &color = Qt::gray);
+
+   protected:
     void keyPressEvent(QKeyEvent *event) override;
     void keyPressEventWithCtrl(QKeyEvent *event);
     void keyPressEventWithoutCtrl(QKeyEvent *event);
@@ -27,7 +30,7 @@ protected:
     QString GetNormalMapName(int id) const;
     QString GetTextureName(int id) const;
 
-private:
+   private:
     void SetSentralWidget();
     void SetDefaultButton(QButtonGroup *button_group);
 
@@ -37,4 +40,4 @@ private:
     QButtonGroup *textures_button_group_;
 };
 
-#endif // SOLUTIONVIEWER_H
+#endif  // SOLUTIONVIEWER_H

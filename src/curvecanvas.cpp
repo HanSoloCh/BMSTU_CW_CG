@@ -1,14 +1,12 @@
 #include "curvecanvas.h"
 
+#include <QMessageBox>
 #include <QPainter>
 #include <QPainterPath>
-#include <QMessageBox>
 
 #include "curve.h"
 
-CurveCanvas::CurveCanvas(QWidget *parent)
-    : QWidget(parent)
-    , color_(Qt::gray) {
+CurveCanvas::CurveCanvas(QWidget *parent) : QWidget(parent), color_(Qt::gray) {
     setFixedSize(800, 800);
 }
 
@@ -28,15 +26,12 @@ QVector<QPointF> CurveCanvas::GetCurvePoints(const axis_t axis, int steps) {
     return bezier.GetPoints();
 }
 
-QColor CurveCanvas::GetColor() const noexcept {
-    return color_;
-}
+QColor CurveCanvas::GetColor() const noexcept { return color_; }
 
 void CurveCanvas::SetColor(const QColor &color) {
     color_ = color;
     update();
 }
-
 
 void CurveCanvas::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
@@ -55,13 +50,11 @@ void CurveCanvas::paintEvent(QPaintEvent *event) {
 
     // Стрелка на оси X
     arrowX << QPointF(width() - 10, centerY - 5)
-           << QPointF(width() - 10, centerY + 5)
-           << QPointF(width(), centerY);
+           << QPointF(width() - 10, centerY + 5) << QPointF(width(), centerY);
     painter.drawPolygon(arrowX);
 
     // Стрелка на оси Y
-    arrowY << QPointF(centerX - 5, 10)
-           << QPointF(centerX + 5, 10)
+    arrowY << QPointF(centerX - 5, 10) << QPointF(centerX + 5, 10)
            << QPointF(centerX, 0);
     painter.drawPolygon(arrowY);
 
@@ -99,15 +92,16 @@ void CurveCanvas::SortPoints() {
     double d_x = main_points_[0].x() - main_points_[1].x();
     double d_y = main_points_[0].y() - main_points_[1].y();
     if (fabs(d_x) > fabs(d_y))
-        std::sort(control_points_.begin(), control_points_.end(), [](const QPointF &p1, const QPointF &p2) {
-            return p1.x() < p2.x();
-        });
+        std::sort(control_points_.begin(), control_points_.end(),
+                  [](const QPointF &p1, const QPointF &p2) {
+                      return p1.x() < p2.x();
+                  });
     else
-        std::sort(control_points_.begin(), control_points_.end(), [](const QPointF &p1, const QPointF &p2) {
-            return p1.y() < p2.y();
-        });
+        std::sort(control_points_.begin(), control_points_.end(),
+                  [](const QPointF &p1, const QPointF &p2) {
+                      return p1.y() < p2.y();
+                  });
 }
-
 
 void CurveCanvas::Clean() {
     main_points_.clear();
@@ -118,13 +112,16 @@ void CurveCanvas::Clean() {
 void CurveCanvas::mousePressEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         if (main_points_.size() >= 2) {
-            QMessageBox::warning(this, "Ошибка", "Начальная и конечная точки уже заданы.");
+            QMessageBox::warning(this, "Ошибка",
+                                 "Начальная и конечная точки уже заданы.");
         } else {
             main_points_.append(event->pos());
         }
     } else if (event->button() == Qt::RightButton) {
         if (main_points_.size() < 2) {
-            QMessageBox::warning(this, "Ошибка", "Сначала задайте начальную и конечную точки (ЛКМ).");
+            QMessageBox::warning(
+                this, "Ошибка",
+                "Сначала задайте начальную и конечную точки (ЛКМ).");
         } else {
             control_points_.append(event->pos());
         }

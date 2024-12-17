@@ -3,12 +3,10 @@
 #include <QPainter>
 #include <memory>
 
-#include "strategy.h"
 #include "drawvisitor.h"
+#include "strategy.h"
 
-Canvas::Canvas(QWidget *parent)
-    : QWidget(parent)
-    , draw_type_(def) {
+Canvas::Canvas(QWidget *parent) : QWidget(parent), draw_type_(def) {
     setFixedSize(800, 800);
 }
 
@@ -26,9 +24,7 @@ void Canvas::Transform(const QMatrix4x4 &transform_matrix) {
     }
 }
 
-void Canvas::SetDefault() {
-    draw_type_ = def;
-}
+void Canvas::SetDefault() { draw_type_ = def; }
 
 void Canvas::SetNormalMap(const QImage &normal_map) {
     draw_type_ = mapping;
@@ -40,7 +36,6 @@ void Canvas::SetTexuture(const QImage &texture) {
     image_ = texture;
 }
 
-
 void Canvas::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     QPainter painter(this);
@@ -50,19 +45,14 @@ void Canvas::paintEvent(QPaintEvent *event) {
     std::unique_ptr<BaseDrawVisitor> visitor;
     // Можно было бы полиморфизмом
     if (draw_type_ == def)
-        visitor = std::make_unique<DrawVisitor>(&painter, size(), strategy, light_);
+        visitor =
+            std::make_unique<DrawVisitor>(&painter, size(), strategy, light_);
     else if (draw_type_ == mapping)
-        visitor = std::make_unique<DrawMappedVisitor>(&painter,
-                                                      size(),
-                                                      strategy,
-                                                      light_,
-                                                      image_);
+        visitor = std::make_unique<DrawMappedVisitor>(&painter, size(),
+                                                      strategy, light_, image_);
     else
-        visitor = std::make_unique<DrawTextureVisitor>(&painter,
-                                                       size(),
-                                                       strategy,
-                                                       light_,
-                                                       image_);
+        visitor = std::make_unique<DrawTextureVisitor>(
+            &painter, size(), strategy, light_, image_);
 
     for (const auto &object : scene_objects_) {
         object->Accept(visitor.get());

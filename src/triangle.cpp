@@ -2,26 +2,23 @@
 
 #include "drawvisitor.h"
 
-
-Triangle::Triangle(const Point &p0, const Point &p1, const Point &p2, const QColor &color)
-    : AbstractModel(color)
-    , points_({p0, p1, p2}) {
+Triangle::Triangle(const Point &p0, const Point &p1, const Point &p2,
+                   const QColor &color)
+    : AbstractModel(color), points_({p0, p1, p2}) {
     QVector3D normal = CalculateNormal();
     points_normals_ = {normal, normal, normal};
     CalculateUVCoords();
 }
 
 Triangle::Triangle(const std::array<Point, 3> &points, const QColor &color)
-    : AbstractModel(color)
-    , points_(points) {
+    : AbstractModel(color), points_(points) {
     QVector3D normal = CalculateNormal();
     points_normals_ = {normal, normal, normal};
     CalculateUVCoords();
 }
 
 Triangle::Triangle(const Point points[3], const QColor &color)
-    : AbstractModel(color)
-    , points_({points[0], points[1], points[2]}) {
+    : AbstractModel(color), points_({points[0], points[1], points[2]}) {
     QVector3D normal = CalculateNormal();
     points_normals_ = {normal, normal, normal};
     CalculateUVCoords();
@@ -30,23 +27,20 @@ Triangle::Triangle(const Point points[3], const QColor &color)
 Triangle::Triangle(const std::array<Point, 3> &points,
                    const std::array<QVector3D, 3> &points_normals,
                    const QColor &color)
-    : AbstractModel(color)
-    , points_(points)
-    , points_normals_(points_normals) {
+    : AbstractModel(color), points_(points), points_normals_(points_normals) {
     CalculateUVCoords();
 }
 
-
-Triangle::Triangle(const Point points[3], const QVector3D points_normals[3], const QColor &color)
-    : AbstractModel(color)
-    , points_({points[0], points[1], points[2]})
-    , points_normals_({points_normals[0], points_normals[1], points_normals[2]}) {
+Triangle::Triangle(const Point points[3], const QVector3D points_normals[3],
+                   const QColor &color)
+    : AbstractModel(color),
+      points_({points[0], points[1], points[2]}),
+      points_normals_(
+          {points_normals[0], points_normals[1], points_normals[2]}) {
     CalculateUVCoords();
 }
 
-void Triangle::Accept(BaseDrawVisitor *visitor) const {
-    visitor->Visit(*this);
-}
+void Triangle::Accept(BaseDrawVisitor *visitor) const { visitor->Visit(*this); }
 
 void Triangle::Transform(const QMatrix4x4 &transform_matrix) {
     for (auto &point : points_) {
@@ -78,9 +72,7 @@ double Triangle::GetMinZ() const noexcept {
     return std::min({points_[0].z(), points_[1].z(), points_[2].z()});
 }
 
-Point Triangle::operator[](int i) const noexcept {
-    return points_[i];
-}
+Point Triangle::operator[](int i) const noexcept { return points_[i]; }
 
 QVector3D Triangle::CalculateNormal() const noexcept {
     QVector3D p10 = (*this)[1] - (*this)[0];
@@ -95,13 +87,16 @@ void Triangle::CalculateUVCoords() {
     double ymax = GetMaxY();
 
     for (int i = 0; i < 3; ++i) {
-        uv_coords_[i] = QVector2D(((*this)[i].x() - xmin) / (xmax - xmin), ((*this)[i].y() - ymin) / (ymax - ymin));
+        uv_coords_[i] = QVector2D(((*this)[i].x() - xmin) / (xmax - xmin),
+                                  ((*this)[i].y() - ymin) / (ymax - ymin));
     }
 }
 
 std::array<Point, 3> Triangle::GetPoints() const noexcept { return points_; }
 
-std::array<QVector3D, 3> Triangle::GetNormals() const noexcept { return points_normals_; }
+std::array<QVector3D, 3> Triangle::GetNormals() const noexcept {
+    return points_normals_;
+}
 
 std::array<QVector2D, 3> Triangle::GetUVCoords() const noexcept {
     return uv_coords_;
@@ -114,4 +109,3 @@ void Triangle::SetUVCoords(const std::array<QVector2D, 3> &uv_coords) {
 void Triangle::SetPoints(const std::array<Point, 3> &points) {
     points_ = points;
 }
-

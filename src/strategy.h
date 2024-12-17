@@ -7,40 +7,42 @@
 class Point;
 
 class AbstractStrategyProjection {
-public:
+   public:
     AbstractStrategyProjection() = default;
     virtual ~AbstractStrategyProjection() = 0;
 
-    virtual Point ProjectPoint(const Point &point, const QSize &canvas_size) const = 0;
+    virtual Point ProjectPoint(const Point &point,
+                               const QSize &canvas_size) const = 0;
 };
 
-class PerspectivStrategyProjection: public AbstractStrategyProjection
-{
-public:
+class PerspectivStrategyProjection : public AbstractStrategyProjection {
+   public:
     explicit PerspectivStrategyProjection(int viewport_width = 1,
-                                           int viewport_height = 1,
-                                           int distance = 1);
+                                          int viewport_height = 1,
+                                          int distance = 1);
 
-    Point ProjectPoint(const Point &point, const QSize &canvas_size) const override;
+    Point ProjectPoint(const Point &point,
+                       const QSize &canvas_size) const override;
 
-protected:
-    QPointF ViewportToCanvas(double x, double y, const QSize &canvas_size) const;
+   protected:
+    QPointF ViewportToCanvas(double x, double y,
+                             const QSize &canvas_size) const;
 
-private:
+   private:
     const int kViewportWidth;
     const int kViewportHeight;
     const int kDistance;
 };
 
-class NewStrategy: public AbstractStrategyProjection {
-public:
+class NewStrategy : public AbstractStrategyProjection {
+   public:
     explicit NewStrategy(int distance = 1) : kDistance(distance) {}
 
-    Point ProjectPoint(const Point &point, const QSize &canvas_size) const override;
+    Point ProjectPoint(const Point &point,
+                       const QSize &canvas_size) const override;
 
-private:
+   private:
     const int kDistance;
 };
 
-
-#endif // STRATEGY_H
+#endif  // STRATEGY_H

@@ -3,15 +3,11 @@
 #include <QMatrix4x4>
 #include <memory>
 
-#include "canvas.h"
 #include "abstractmodel.h"
+#include "canvas.h"
 #include "light.h"
 
-
-Facade::Facade()
-    : canvas_(std::make_unique<Canvas>()) {
-    AddBaseLight();
-}
+Facade::Facade() : canvas_(std::make_unique<Canvas>()) { AddBaseLight(); }
 
 void Facade::AddBaseLight() {
     AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, -1)));
@@ -61,6 +57,4 @@ void Facade::SetTexture(const QString &file_name) {
     canvas_->update();
 }
 
-Canvas *Facade::GetCanvas() const {
-    return canvas_.get();
-}
+Canvas *Facade::GetCanvas() const { return canvas_.get(); }
