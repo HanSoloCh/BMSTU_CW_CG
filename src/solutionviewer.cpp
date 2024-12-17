@@ -180,11 +180,11 @@ void SolutionViewer::keyPressEvent(QKeyEvent *event) {
 QString SolutionViewer::GetNormalMapName(int id) const {
     switch (id) {
         case 1:
-            return "wood_map.png";
+            return "../textures/wood_map.png";
         case 2:
-            return "rock_map.png";
+            return "../textures/rock_map.png";
         case 3:
-            return "metal_map.png";
+            return "../textures/metal_map.png";
         default:
             return ".";
     }
@@ -193,11 +193,11 @@ QString SolutionViewer::GetNormalMapName(int id) const {
 QString SolutionViewer::GetTextureName(int id) const {
     switch (id) {
         case 1:
-            return "wood.png";
+            return "../textures/wood.png";
         case 2:
-            return "rock.png";
+            return "../textures/rock.png";
         case 3:
-            return "metal.png";
+            return "../textures/metal.png";
         default:
             return ".";
     }
