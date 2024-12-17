@@ -1,40 +1,30 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QButtonGroup>
 #include <QMainWindow>
-#include <memory>
+#include <QVBoxLayout>
 
-#include "facade.h"
+#include "curvecanvas.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
-QT_END_NAMESPACE
-
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
-public:
+   public:
     MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() = default;
 
-protected:
-    void setValidatorsToIntputEdits();
-    void keyPressEvent(QKeyEvent *event) override;
-    void keyPressEventWithoutCtrl(QKeyEvent *event);
-    void keyPressEventWithCtrl(QKeyEvent *event);
+   protected:
+    void AddButtons(QWidget *central_widget, QVBoxLayout *layout);
+    void AddAxisButtons(QWidget *central_widget, QVBoxLayout *layout);
 
-private slots:
-    void on_setForming_clicked();
+   private slots:
+    void onGenerateButtonClicked();
 
-    void on_drawButton_clicked();
+   private:
+    QString GetFileName() const;
 
-    void on_clearButton_clicked();
-
-private:
-    Ui::MainWindow *ui;
-    std::unique_ptr<CanvasFacade> canvasFacade;
+    CurveCanvas *curve_canvas_;
+    QButtonGroup *axis_button_group_;
 };
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H

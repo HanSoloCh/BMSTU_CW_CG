@@ -1,38 +1,29 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include "abstractobject.h"
-
 #include <QColor>
+#include <QPointF>
+#include <QVector3D>
 
-class Point : public AbstractObject
-{
-public:
-    Point(double curX, double curY, double curZ, QColor curColor = Qt::white, bool isConst = false);
+#include "abstractmodel.h"
+
+class Point : public AbstractModel, public QVector3D {
+   public:
+    explicit Point(double x = 0.0, double y = 0.0, double z = 0.0,
+                   const QColor &color = Qt::white);
+    explicit Point(QPoint p, double z = 0.0, const QColor &color = Qt::white);
+    explicit Point(QPointF p, double z = 0.0, const QColor &color = Qt::white);
+    explicit Point(const QVector3D &vector, const QColor &color = Qt::white);
+
     ~Point() = default;
 
-    void draw(QPainter &painter, const ProjectionStrategy &strategy, QSize canvasSize) const override;
+    operator QPointF() { return QPointF(x(), y()); }
 
-    void move(double xMove, double yMove, double zMove) override;
-    void rotate(double xAngle, double yAngle, double zAngle) override;
-    void scale(double xScale, double yScale, double zScale) override;
+    void Accept(BaseDrawVisitor *visitor) const override;
 
-    double getX() const {
-        return x;
-    }
-    double getY() const {
-        return y;
-    }
-    double getZ() const {
-        return z;
-    }
+    void Transform(const QMatrix4x4 &transform_matrix) override;
 
-protected:
-    void xRotate(Point &point, double angle);
-    void yRotate(Point &point, double angle);
-    void zRotate(Point &point, double angle);
-private:
-    double x, y, z;
+    bool operator==(const Point &p) const noexcept;
 };
 
-#endif // POINT_H
+#endif  // POINT_H

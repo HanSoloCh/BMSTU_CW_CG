@@ -1,66 +1,60 @@
 #include "facade.h"
 
-CanvasFacade::CanvasFacade()
-    : canvas(std::make_unique<Canvas>())
-{}
+#include <QMatrix4x4>
+#include <memory>
 
-Canvas *CanvasFacade::getCanvas() const
-{
-    return canvas.get();
+#include "abstractmodel.h"
+#include "canvas.h"
+#include "light.h"
+
+Facade::Facade() : canvas_(std::make_unique<Canvas>()) { AddBaseLight(); }
+
+void Facade::AddBaseLight() {
+    AddLight(std::make_shared<DirectionLight>(1, QVector3D(0, 0, -1)));
 }
 
-
-void CanvasFacade::addLine(Line *line)
-{
-    std::shared_ptr<Line> addLine = std::shared_ptr<Line>(line);
-    canvas->addObject(addLine);
-    canvas->update();
+void Facade::AddObject(std::shared_ptr<AbstractModel> object) {
+    canvas_->AddModel(object);
+    canvas_->update();
 }
 
-void CanvasFacade::addLine(const Point &start, const Point &end, QColor color)
-{
-    std::shared_ptr<Line> line = std::make_shared<Line>(qMakePair(start, end), color);
-    canvas->addObject(line);
-    canvas->update();
+void Facade::AddLight(std::shared_ptr<AbstractLight> light) {
+    canvas_->AddLight(light);
+    canvas_->update();
 }
 
-void CanvasFacade::addLine(double x1, double y1, double z1, double x2, double y2, double z2, QColor color)
-{
-    Point start{x1, y1, z1};
-    Point end{x2, y2, z2};
-    std::shared_ptr<Line> line = std::make_shared<Line>(qMakePair(start, end), color);
-    formings.push_back(line);
-    canvas->addObject(line);
-    canvas->update();
+void Facade::Move(double x, double y, double z) {
+    QMatrix4x4 translation_matrix;
+    translation_matrix.translate(x, y, z);
+    canvas_->Transform(translation_matrix);
+    canvas_->update();
 }
 
-void CanvasFacade::move(double xMove, double yMove, double zMove)
-{
-    canvas->move(xMove, yMove, zMove);
-    canvas->update();
+void Facade::Rotate(double x, double y, double z) {
+    QMatrix4x4 rotation_matrix;
+    rotation_matrix.rotate(x, 1, 0, 0);
+    rotation_matrix.rotate(y, 0, 1, 0);
+    rotation_matrix.rotate(z, 0, 0, 1);
+    canvas_->Transform(rotation_matrix);
+    canvas_->update();
 }
 
-void CanvasFacade::rotate(double xAngle, double yAngle, double zAngle)
-{
-    canvas->rotate(xAngle, yAngle, zAngle);
-    canvas->update();
+void Facade::SetNormalMap(const QString &file_name) {
+    QImage image(file_name);
+    if (image.isNull())
+        canvas_->SetDefault();
+    else
+        canvas_->SetNormalMap(QImage(file_name));
+    canvas_->update();
 }
 
-void CanvasFacade::scale(double xScale, double yScale, double zScale)
-{
-    canvas->scale(xScale, yScale, zScale);
-    canvas->update();
+void Facade::SetTexture(const QString &file_name) {
+    QImage image(file_name);
+    if (image.isNull())
+        canvas_->SetDefault();
+    else
+        canvas_->SetTexuture(QImage(file_name));
+    canvas_->update();
 }
 
-void CanvasFacade::makeRotatinShape()
-{
-    std::shared_ptr<RotationShape> shape = std::make_shared<RotationShape>(*(formings[0]));
-    canvas->addObject(shape);
-    canvas->update();
-}
-
-void CanvasFacade::deleteAll()
-{
-    canvas->deleteAll();
-    canvas->update();
-}
+Canvas *Facade::GetCanvas() const { return canvas_.get(); }
