@@ -9,7 +9,7 @@
 Canvas::Canvas(QWidget *parent)
     : QWidget(parent)
     , draw_type_(def) {
-    setFixedSize(1000, 1000);
+    setFixedSize(800, 800);
 }
 
 void Canvas::AddModel(const std::shared_ptr<AbstractModel> carcas_model) {

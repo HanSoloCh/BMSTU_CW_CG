@@ -45,8 +45,30 @@ void CurveCanvas::paintEvent(QPaintEvent *event) {
 
     // Рисуем ось вращения
     painter.setPen(Qt::gray);
-    painter.drawLine(width() / 2, 0, width() / 2, height());
-    painter.drawLine(0, height() / 2, width(), height() / 2);
+    int centerX = width() / 2;
+    int centerY = height() / 2;
+    painter.drawLine(centerX, 0, centerX, height());
+    painter.drawLine(0, centerY, width(), centerY);
+
+    // Рисуем стрелки на концах осей
+    QPolygonF arrowX, arrowY;
+
+    // Стрелка на оси X
+    arrowX << QPointF(width() - 10, centerY - 5)
+           << QPointF(width() - 10, centerY + 5)
+           << QPointF(width(), centerY);
+    painter.drawPolygon(arrowX);
+
+    // Стрелка на оси Y
+    arrowY << QPointF(centerX - 5, 10)
+           << QPointF(centerX + 5, 10)
+           << QPointF(centerX, 0);
+    painter.drawPolygon(arrowY);
+
+    // Подписи осей
+    painter.setFont(QFont("Arial", 10));
+    painter.drawText(width() - 20, centerY - 10, "X");
+    painter.drawText(centerX + 10, 20, "Y");
 
     // Рисуем заданные точки
     painter.setPen(color_);

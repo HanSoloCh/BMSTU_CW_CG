@@ -95,22 +95,17 @@ CarcasModel GenerateCarcasModelFromCurve(const QVector<QPointF> &curve,
 
         for (int i = 0; i < segments; ++i) {
             double angle = i * angleStep;
-            double x = 0.0, y = 0.0, z = 0.0;
+            double x = 0.0, y = 0.0;
 
             if (rotation_axis == Ox) {
                 x = curve[j].x();
                 y = curve[j].y();
-                z = 0;
             } else if (rotation_axis == Oy) {
                 y = curve[j].x();
                 x = curve[j].y();
-                z = 0;
             }
 
-            // Координаты вращения
-            double rotatedY = y * cos(angle) - z * sin(angle);
-            double rotatedZ = y * sin(angle) + z * cos(angle);
-            points.append(Point(x, rotatedY, rotatedZ));
+            points.append(Point(x, y * cos(angle), y * sin(angle)));
 
             // Рассчитываем U как долю угла
             double U = static_cast<double>(i) / segments;
@@ -134,6 +129,39 @@ CarcasModel GenerateCarcasModelFromCurve(const QVector<QPointF> &curve,
             triangles.push_back({next, nextLayerCurrent, nextLayerNext});
         }
     }
+    int bottomCenterIndex = points.size();
+    int topCenterIndex = bottomCenterIndex + 1;
+
+    // Центральные точки крышек (точки на оси вращения)
+    if (rotation_axis == Ox) {
+        points.append(Point(curve.first().x(), 0, 0)); // Нижняя крышка
+        uvCoords.append(QVector2D(0.5, 0.0));         // UV для нижней крышки
+
+        points.append(Point(curve.last().x(), 0, 0)); // Верхняя крышка
+        uvCoords.append(QVector2D(0.5, 1.0));         // UV для верхней крышки
+    } else if (rotation_axis == Oy) {
+        points.append(Point(curve.first().y(), 0, 0)); // Нижняя крышка
+        uvCoords.append(QVector2D(0.5, 0.0));          // UV для нижней крышки
+
+        points.append(Point(curve.last().y(), 0, 0));  // Верхняя крышка
+        uvCoords.append(QVector2D(0.5, 1.0));          // UV для верхней крышки
+    }
+    // Нижняя крышка
+    int firstBaseIndex = 0;
+    for (int i = 0; i < segments; ++i) {
+        int next = (i + 1) % segments;
+        triangles.push_back({bottomCenterIndex, firstBaseIndex + next, firstBaseIndex + i});
+    }
+
+    // Верхняя крышка
+    int lastBaseIndex = (curvePointCount - 1) * segments;
+    for (int i = 0; i < segments; ++i) {
+        int next = (i + 1) % segments;
+        triangles.push_back({topCenterIndex, lastBaseIndex + i, lastBaseIndex + next});
+    }
+
+
+
     // Шаг 4. Возвращаем каркас с UV
     return CarcasModel(points, triangles, color, uvCoords);
 }
