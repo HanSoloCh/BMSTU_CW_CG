@@ -1,6 +1,6 @@
 #include "drawvisitor.h"
 
-#include <QVector4D>
+#include <QVector3D>
 
 BaseDrawVisitor::~BaseDrawVisitor() {}
 
